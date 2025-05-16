@@ -1,0 +1,121 @@
+enum user_status {
+    active
+    inactive
+    banned
+}
+
+enum user_role {
+  basic
+  premium
+}
+
+enum gender {
+  male
+  female
+  other
+}
+
+
+model users {
+  id Int @id @default(autoincrement())
+  name String
+  email String @unique
+  password String
+  
+  // With these
+  joined_at DateTime @default(now())
+  updated_at DateTime? @updatedAt
+  activated_at DateTime?
+  last_login_time DateTime?
+  birth_date DateTime
+
+  role user_role @default(basic)
+
+  status user_status @default(inactive)
+
+  songs_liked song_likes[]
+  genre_interests user_genre_interests[]
+  user_artist_interests user_artist_interests[]
+  artists_followed artist_followers[]
+  favorite user_favorites[]
+  playlists user_playlists[]
+
+  gender gender
+
+  // Existing fields...
+  
+  // Add profile picture
+  profile_picture String?
+  
+  // Add phone number
+  phone_number String?
+  
+  // Add soft delete
+  deleted_at DateTime?
+  
+  // Add two-factor auth fields
+  two_factor_enabled Boolean @default(false)
+  two_factor_secret String?
+  
+  // Add relationships to playlists
+  user_playlists playlists[]
+
+  user_settings user_settings?
+  payments payments[]
+  subscriptions subscriptions[]
+
+}
+
+model user_settings {
+  id Int @id @default(autoincrement())
+  
+  // Add user relationship
+  user_id Int @unique
+  user users @relation(fields: [user_id], references: [id])
+  
+  // Add settings fields
+  theme String @default("light")
+  notifications_enabled Boolean @default(true)
+  language String @default("en")
+  auto_play Boolean @default(true)
+  
+  created_at DateTime @default(now())
+  updated_at DateTime?
+}
+
+model verification_codes {
+  id Int @id @default(autoincrement())
+  activation_code String
+  email String
+
+  sent_at DateTime
+}
+
+model user_genre_interests {
+  id Int @id @default(autoincrement())
+  genre_id Int
+  genre genres @relation(fields: [genre_id], references: [id])
+
+  user_id Int
+  user users @relation(fields: [user_id], references: [id])
+}
+
+model user_artist_interests {
+  id Int @id @default(autoincrement())
+  artist_id Int
+  artist artists @relation(fields: [artist_id], references: [id])
+
+  user_id Int
+  user users @relation(fields: [user_id], references: [id])
+}
+
+
+model user_favorites {
+    id Int @id @default(autoincrement())
+
+    song_id Int
+    song songs @relation(fields: [song_id], references: [id])
+
+    user_id Int
+    user users @relation(fields: [user_id], references: [id])
+}

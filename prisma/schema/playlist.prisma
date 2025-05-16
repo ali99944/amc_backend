@@ -1,0 +1,38 @@
+model playlists {
+  id Int @id @default(autoincrement())
+  title String
+  description String
+  cover_image String
+  is_public Boolean @default(false)
+  total_songs Int
+  
+  // Add relationship to playlist_songs
+  songs playlist_songs[]
+  
+  // Add user relationship
+  user_id Int
+  user users @relation(fields: [user_id], references: [id])
+  
+  created_at DateTime @default(now())
+  updated_at DateTime?
+  
+  @@index([user_id])
+}
+
+model playlist_songs {
+  id Int @id @default(autoincrement())
+  song_id Int
+  song songs @relation(fields: [song_id], references: [id])
+  
+  // Add missing playlist relationship
+  playlist_id Int
+  playlist playlists @relation(fields: [playlist_id], references: [id])
+  
+  // Add song order field
+  position Int
+  
+  added_at DateTime @default(now())
+  
+  @@index([playlist_id])
+  @@index([song_id])
+}

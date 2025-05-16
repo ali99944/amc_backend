@@ -1,0 +1,40 @@
+model artists {
+  id Int @id @default(autoincrement())
+  name String
+  image String
+  bio String
+  is_featured Boolean @default(false)
+
+  created_at DateTime @default(now())
+  updated_at DateTime? @updatedAt
+
+
+  songs songs[]
+  // albums albums[]
+
+  total_followers Int @default(0)
+  followers artist_followers[]
+  genres artist_genre[]
+  user_interests user_artist_interests[]
+}
+
+
+model artist_followers {
+    id Int @id @default(autoincrement())
+    artist_id Int
+    artist artists @relation(fields: [artist_id], references: [id])
+
+    user_id Int
+    user users @relation(fields: [user_id], references: [id])
+
+    followed_at DateTime
+}
+
+model artist_genre {
+    id Int @id @default(autoincrement())
+    genre_id Int
+    genre genres @relation(fields: [genre_id], references: [id])
+
+    artist_id Int
+    artist artists @relation(fields: [artist_id], references: [id])
+}

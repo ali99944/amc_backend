@@ -1,0 +1,16 @@
+model genres {
+  id Int @id @default(autoincrement())
+  image String
+  name String
+
+  total_songs Int @default(0)
+
+  songs songs[]
+  user_interests user_genre_interests[]
+  // albums albums[]
+
+  artist_genres artist_genre[]
+
+  created_at String
+  updated_at String?
+}

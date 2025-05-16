@@ -1,0 +1,30 @@
+enum manager_role {
+  admin
+  super_admin
+}
+
+model managers {
+  id Int @id @default(autoincrement())
+  name String
+  username String @unique
+  password String // Store hashed passwords only
+  
+  // Add last login tracking
+  last_login DateTime?
+  
+  permissions manager_permissions[]
+  
+  role manager_role @default(admin)
+  
+  created_at DateTime @default(now())
+  updated_at DateTime?
+}
+
+model manager_permissions {
+  id Int @id @default(autoincrement())
+  name String
+  value String @unique
+
+  manager_id Int
+  manager managers @relation(fields: [manager_id], references: [id])
+}

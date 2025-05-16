@@ -1,0 +1,13 @@
+model user_playlists {
+    id        Int     @id @default(autoincrement())
+    user_id   Int
+    user      users   @relation(fields: [user_id], references: [id])
+    playlist_id Int
+    playlist_name String
+    playlist_cover_url String
+    playlist_description String
+    playlist_songs_count Int
+
+    @@map("user_playlists")
+}
+

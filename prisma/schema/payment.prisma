@@ -1,0 +1,22 @@
+model payments {
+  id Int @id @default(autoincrement())
+  amount Float
+  currency String
+  status String
+  payment_method String
+  transaction_id String?
+  
+  // Add user relationship
+  user_id Int
+  user users @relation(fields: [user_id], references: [id])
+  
+  // Add subscription relationship
+  subscription_id Int?
+  subscription subscriptions? @relation(fields: [subscription_id], references: [id])
+  
+  created_at DateTime @default(now())
+  updated_at DateTime?
+  
+  @@index([user_id])
+  @@index([subscription_id])
+}

@@ -1,0 +1,75 @@
+model podcast_categories {
+  id Int @id @default(autoincrement())
+  name String
+  description String?
+  image String?
+  
+  // Add relationship to podcasts
+  podcasts podcast_seasons[]
+  
+  created_at DateTime @default(now())
+  updated_at DateTime?
+}
+
+model podcast_seasons {
+  id Int @id @default(autoincrement())
+  title String
+  description String
+  cover_image String
+  release_date DateTime
+  
+  // Add category relationship
+  category_id Int
+  category podcast_categories @relation(fields: [category_id], references: [id])
+  
+  // Add host relationship
+  host_id Int
+  host podcast_host @relation(fields: [host_id], references: [id])
+  
+  // Add episodes relationship
+  episodes podcast_episodes[]
+  
+  created_at DateTime @default(now())
+  updated_at DateTime?
+  
+  @@index([category_id])
+  @@index([host_id])
+}
+
+model podcast_episodes {
+  id Int @id @default(autoincrement())
+  title String
+  description String
+  audio_src String
+  duration Float
+  cover_image String?
+  release_date DateTime
+  
+  // Add season relationship
+  season_id Int
+  season podcast_seasons @relation(fields: [season_id], references: [id])
+  
+  // Add transcript field
+  transcript String?
+  
+  // Add play count
+  play_count Int @default(0)
+  
+  created_at DateTime @default(now())
+  updated_at DateTime?
+  
+  @@index([season_id])
+}
+
+model podcast_host {
+  id Int @id @default(autoincrement())
+  name String
+  bio String?
+  image String?
+  
+  // Add podcasts relationship
+  podcasts podcast_seasons[]
+  
+  created_at DateTime @default(now())
+  updated_at DateTime?
+}
