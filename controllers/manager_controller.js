@@ -8,6 +8,25 @@ import asyncWrapper from "../lib/wrappers/async_wrapper.js"
 
 export const getAllManagersController = asyncWrapper(
     async (req, res) => {
+        // const {
+        //     page = 1, limit = 10, 
+        //     sortBy = 'created_at',
+        //     sortOrder = 'desc',
+        //     search // For order_number
+        // } = queryParams;
+
+        // const filters = {};
+
+        // if (search) filters.order_number = { contains: search, mode: 'insensitive' };
+
+        // const orders = await prisma.orders.findMany({
+        //     where: filters,
+        //     include: {},
+        //     orderBy: { [sortBy]: sortOrder },
+        //     skip: (parseInt(page) - 1) * parseInt(limit),
+        //     take: parseInt(limit),
+        // });
+
         const managers = await prisma.managers.findMany({
             include: {
                 permissions: true
@@ -154,5 +173,25 @@ export const getManagersPermissionsController = asyncWrapper(
             }
         })
         return res.status(OK_STATUS).json({ success: true, permissions })
+    }
+)
+
+
+export const deleteManager = asyncWrapper(
+    async (req, res) => {
+        const { manager_id } = req.body
+        await prisma.managers.delete({
+            where: {
+                id: manager_id
+            }
+        })
+        return res.status(OK_STATUS).json({ success: true })
+    }
+)
+
+export const logoutManager = asyncWrapper(
+    async (req, res) => {
+        res.clearCookie('token')
+        return res.status(OK_STATUS).json({ success: true })
     }
 )

@@ -28,11 +28,11 @@ const main = async () => {
         app.use(
             '/api',
             (await import('./routes/manager_route.js')).default,
+            (await import('./routes/artist_route.js')).default,
             // (await import('./routes/authentication_route.js')).default,
             // (await import('./routes/users_route.js')).default,
             // (await import('./routes/songs_route.js')).default,
             // (await import('./routes/genre_route.js')).default,
-            // (await import('./routes/artist_route.js')).default,
             // (await import('./routes/playlist_route.js')).default,
             // (await import('./routes/settings_route.js')).default,
             // (await import('./routes/analytics_route.js')).default,

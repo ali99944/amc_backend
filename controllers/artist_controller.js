@@ -1,7 +1,10 @@
+import { ApiError } from "../lib/api_error.js"
+import { BAD_REQUEST_CODE, NOT_FOUND_CODE } from "../lib/error_codes.js"
 import prisma from "../lib/prisma.js"
 import { NOT_FOUND_STATUS, OK_STATUS } from "../lib/status_codes.js"
+import Validator from "../lib/validator.js"
 import asyncWrapper from "../lib/wrappers/async_wrapper.js"
-import CustomError from "../utils/custom_error.js"
+
 
 export const getAllArtistsController = asyncWrapper(
     async (req, res) => {
@@ -34,7 +37,7 @@ export const getArtistController = asyncWrapper(
         })
 
         if(!artist) {
-            const not_found_error = new CustomError("Artist not found", NOT_FOUND_STATUS)
+            const not_found_error = new ApiError("Artist not found", NOT_FOUND_CODE, NOT_FOUND_STATUS)
             return next(not_found_error)
         }
 
@@ -44,10 +47,10 @@ export const getArtistController = asyncWrapper(
 
 export const createArtistController = asyncWrapper(
     async (req, res) => {
-        const { name, image, bio, genres } = req.body
+        const { name, bio, genres } = req.body
 
-        await Validator.validateNotNull({ name, image, bio })
-        await Validator.isArray(genres)
+        await Validator.validateNotNull({ name, bio })
+        await Validator.isArray(genres, "genres")
 
         const artist = await prisma.artists.create({
             data: {
@@ -124,7 +127,7 @@ export const followArtistController = asyncWrapper(
         })
 
         if(is_following) {
-            const already_following_error = new CustomError("You are already following this artist", BAD_REQUEST)
+            const already_following_error = new ApiError("You are already following this artist", BAD_REQUEST_CODE, BAD_REQUEST)
             return next(already_following_error)
         }
 
@@ -154,7 +157,7 @@ export const unfollowArtistController = asyncWrapper(
         })
 
         if(!is_following) {
-            const not_following_error = new CustomError("You are not following this artist", BAD_REQUEST)
+            const not_following_error = new ApiError("You are not following this artist", BAD_REQUEST_CODE, BAD_REQUEST)
             return next(not_following_error)
         }
 
