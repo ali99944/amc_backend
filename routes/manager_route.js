@@ -6,7 +6,7 @@ const router = express.Router()
 router.get('/managers', getAllManagersController)
 router.post('/managers', createManagerController)
 router.post('/managers/login', loginManagerController)
-router.post('/managers/verify-token', verifyManagerTokenController)
+router.get('/managers/verify-token', verifyManagerTokenController)
 
 
 router.get('/managers/:id/permissions', getManagersPermissionsController)
