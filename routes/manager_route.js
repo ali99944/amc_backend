@@ -1,6 +1,5 @@
 import express from "express"
 import { addManagerPermissionController, createManagerController, getAllManagersController, getManagersPermissionsController, loginManagerController, removeManagerPermissionController, verifyManagerTokenController } from "../controllers/manager_controller.js"
-import isAdmin from "../middlewares/is_admin.js"
 
 const router = express.Router()
 

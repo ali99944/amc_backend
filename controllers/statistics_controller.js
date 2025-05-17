@@ -1,5 +1,5 @@
 import prisma from "../lib/prisma.js";
-import { OK } from "../lib/status_codes.js";
+import { OK_STATUS } from "../lib/status_codes.js";
 import asyncWrapper from "../lib/wrappers/async_wrapper.js";
 
 export const getOverviewController = asyncWrapper(
@@ -15,7 +15,7 @@ export const getOverviewController = asyncWrapper(
             }
         })
 
-        return res.status(OK).json({ 
+        return res.status(OK_STATUS).json({ 
             total_songs, 
             total_artists, 
             // total_albums, 
@@ -40,7 +40,7 @@ export const getTopSongsController = asyncWrapper(
             }
         })
 
-        return res.status(OK).json(top_songs)
+        return res.status(OK_STATUS).json(top_songs)
     }
 )
 
@@ -53,6 +53,6 @@ export const getRecentUsersController = asyncWrapper(
             take: 10
         })
 
-        return res.status(OK).json(recent_users)
+        return res.status(OK_STATUS).json(recent_users)
     }
 )

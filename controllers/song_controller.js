@@ -1,12 +1,12 @@
 import prisma from "../lib/prisma.js"
-import { OK } from "../lib/status_codes.js"
+import { OK_STATUS } from "../lib/status_codes.js"
 import Validator from "../lib/validator.js"
 import asyncWrapper from "../lib/wrappers/async_wrapper.js"
 
 export const getAllSongsController = asyncWrapper(
     async (req, res) => {
         const songs = await prisma.songs.findMany()
-        return res.status(OK).json(songs)
+        return res.status(OK_STATUS).json(songs)
     }
 )
 
@@ -26,7 +26,7 @@ export const createSongController = asyncWrapper(
             }
         })
 
-        return res.status(OK).json(song)
+        return res.status(OK_STATUS).json(song)
     }
 )
 
@@ -50,7 +50,7 @@ export const updateSongController = asyncWrapper(
             }
         })
 
-        return res.status(OK).json(song)
+        return res.status(OK_STATUS).json(song)
     }
 )
 
@@ -62,7 +62,7 @@ export const deleteSongController = asyncWrapper(
                 id: +id
             }
         })
-        return res.status(OK).json({ success: true })
+        return res.status(OK_STATUS).json({ success: true })
     }
 )
 
@@ -75,6 +75,6 @@ export const getArtistSongsController = asyncWrapper(
                 artist_id: +artist_id
             }
         })
-        return res.status(OK).json(artist_songs)
+        return res.status(OK_STATUS).json(artist_songs)
     }
 )

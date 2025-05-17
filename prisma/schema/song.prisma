@@ -29,6 +29,8 @@ model songs {
   created_at DateTime @default(now())
   updated_at DateTime? @updatedAt
   release_date DateTime
+
+  albums albums[]
 }
 
 model song_likes {

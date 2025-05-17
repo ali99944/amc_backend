@@ -1,18 +1,25 @@
-// model albums {
-//   id Int @id @default(autoincrement())
-//   cover_image String
-//   title String
-//   release_date String
+model albums {
+  id Int @id @default(autoincrement())
+  title String
+  description String?
+  cover_image String
+  release_date DateTime
   
-//   total_songs Int @default(0)
+  total_songs Int @default(0)
+  total_plays Int @default(0)
+  is_featured Boolean @default(false)
 
-//   is_featured Boolean @default(false)
+  artist_id Int
+  artist artists @relation(fields: [artist_id], references: [id])
 
-//   artist_id Int
-//   artist artists @relation(fields: [artist_id], references: [id])
+  genre_id Int
+  genre genres @relation(fields: [genre_id], references: [id])
 
-//   genre_id Int
-//   genre genres @relation(fields: [genre_id], references: [id])
-
-//   songs songs[]
-// }
+  songs songs[]
+  
+  created_at DateTime @default(now())
+  updated_at DateTime? @updatedAt
+  
+  @@index([artist_id])
+  @@index([genre_id])
+}

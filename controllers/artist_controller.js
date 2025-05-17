@@ -1,5 +1,5 @@
 import prisma from "../lib/prisma.js"
-import { NOT_FOUND, OK } from "../lib/status_codes.js"
+import { NOT_FOUND_STATUS, OK_STATUS } from "../lib/status_codes.js"
 import asyncWrapper from "../lib/wrappers/async_wrapper.js"
 import CustomError from "../utils/custom_error.js"
 
@@ -14,7 +14,7 @@ export const getAllArtistsController = asyncWrapper(
             }
         })
 
-        return res.status(OK).json(artists)
+        return res.status(OK_STATUS).json(artists)
     }
 )
 
@@ -34,11 +34,11 @@ export const getArtistController = asyncWrapper(
         })
 
         if(!artist) {
-            const not_found_error = new CustomError("Artist not found", NOT_FOUND)
+            const not_found_error = new CustomError("Artist not found", NOT_FOUND_STATUS)
             return next(not_found_error)
         }
 
-        return res.status(OK).json(artist)
+        return res.status(OK_STATUS).json(artist)
     }
 )
 
@@ -62,7 +62,7 @@ export const createArtistController = asyncWrapper(
             }
         })
 
-        return res.status(OK).json(artist)
+        return res.status(OK_STATUS).json(artist)
     }
 )
 
@@ -93,7 +93,7 @@ export const updateArtistController = asyncWrapper(
             }
         })
 
-        return res.status(OK).json(artist)
+        return res.status(OK_STATUS).json(artist)
     }
 )
 
@@ -105,7 +105,7 @@ export const deleteArtistController = asyncWrapper(
                 id: +id
             }
         })
-        return res.status(OK).json({ success: true })
+        return res.status(OK_STATUS).json({ success: true })
     }
 )
 
@@ -135,7 +135,7 @@ export const followArtistController = asyncWrapper(
             }
         })
 
-        return res.status(OK).json({ success: true })
+        return res.status(OK_STATUS).json({ success: true })
     }
 )
 
@@ -164,6 +164,6 @@ export const unfollowArtistController = asyncWrapper(
             }
         })
 
-        return res.status(OK).json({ success: true })
+        return res.status(OK_STATUS).json({ success: true })
     }
 )

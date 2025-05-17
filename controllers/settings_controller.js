@@ -1,5 +1,5 @@
 import prisma from "../lib/prisma.js";
-import { OK } from "../lib/status_codes.js";
+import { OK_STATUS } from "../lib/status_codes.js";
 import asyncWrapper from "../lib/wrappers/async_wrapper.js";
 
 export const getSettingsController = asyncWrapper(
@@ -12,7 +12,7 @@ export const getSettingsController = asyncWrapper(
             }
         })
 
-        return res.status(OK).json(settings)
+        return res.status(OK_STATUS).json(settings)
     }
 )
 
@@ -27,7 +27,7 @@ export const saveSettingsController = asyncWrapper(
             create: { key: key, controls: controls }
         })
 
-        return res.status(OK).json({ success: true })
+        return res.status(OK_STATUS).json({ success: true })
     }
 )
 

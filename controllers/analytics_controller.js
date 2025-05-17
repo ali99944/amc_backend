@@ -1,5 +1,5 @@
 import prisma from "../lib/prisma.js"
-import { OK } from "../lib/status_codes.js"
+import { OK_STATUS } from "../lib/status_codes.js"
 import asyncWrapper from "../lib/wrappers/async_wrapper.js"
 
 import moment from "moment"
@@ -27,7 +27,7 @@ export const getUserGrowthController = asyncWrapper(
 
         const data = Object.values(userGrowth)
 
-        return res.status(OK).json(data)
+        return res.status(OK_STATUS).json(data)
     }
 )
 
@@ -40,6 +40,6 @@ export const getSongsCategorizedByGenreController = asyncWrapper(
             }
         })
 
-        return res.status(OK).json(songsCategorizedByGenre)
+        return res.status(OK_STATUS).json(songsCategorizedByGenre)
     }
 )

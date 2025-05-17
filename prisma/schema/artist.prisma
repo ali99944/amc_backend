@@ -16,6 +16,8 @@ model artists {
   followers artist_followers[]
   genres artist_genre[]
   user_interests user_artist_interests[]
+
+  albums albums[]
 }
 
 

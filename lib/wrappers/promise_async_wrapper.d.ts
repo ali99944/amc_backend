@@ -1,4 +1,4 @@
-import { CustomError } from '../interfaces/custom_error_class';
+import { ApiError } from "../api_error";
 
 /**
  * Represents a function that wraps an asynchronous function returning a promise.
@@ -7,8 +7,8 @@ import { CustomError } from '../interfaces/custom_error_class';
  * @returns {Promise} - A promise that resolves or rejects based on the result of the wrapped function.
  */
 declare type PromiseAsyncWrapperFunction = (
-  fn: (resolve: (value?: T) => void, reject: (reason?: CustomError) => void) => Promise<void>,
-) => (resolve: (value?: T) => void, reject: (reason?: CustomError) => void) => void;
+  fn: (resolve: (value?: T) => void, reject: (reason?: ApiError) => void) => Promise<void>,
+) => (resolve: (value?: T) => void, reject: (reason?: ApiError) => void) => void;
 
 /**
  * Wraps an asynchronous function returning a promise, handling errors and rejecting with a CustomError.

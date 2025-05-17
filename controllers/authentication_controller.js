@@ -1,5 +1,5 @@
 import { generateToken } from "../lib/security.js";
-import { OK } from "../lib/status_codes.js";
+import { OK_STATUS } from "../lib/status_codes.js";
 import Validator from "../lib/validator.js";
 import asyncWrapper from "../lib/wrappers/async_wrapper.js";
 import { activateAccount, loginUser, registerUser } from "../services/authentication_service.js";
@@ -20,7 +20,7 @@ export const registerUserController = asyncWrapper(
 
         const user = await registerUser({ email, name, password, genres, artists, birth_date, gender })
 
-        return res.status(OK).json(user)
+        return res.status(OK_STATUS).json(user)
     }
 )
 
@@ -40,7 +40,7 @@ export const getAuthenticatedUserController = asyncWrapper(
             }
         })
 
-        return res.status(OK).json(user)
+        return res.status(OK_STATUS).json(user)
     }
 )
 
@@ -51,7 +51,7 @@ export const loginUserController = asyncWrapper(
         const user = await loginUser({ email, password })
         const token = await generateToken(user)
 
-        return res.status(OK).json({ user, token, success: true })
+        return res.status(OK_STATUS).json({ user, token, success: true })
     }
 )
 
@@ -61,7 +61,7 @@ export const activateAccountController = asyncWrapper(
 
         await activateAccount({ email, activation_code })
 
-        return res.status(OK).json({
+        return res.status(OK_STATUS).json({
             success: true
         })
     }

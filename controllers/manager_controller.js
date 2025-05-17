@@ -1,20 +1,38 @@
+import { ApiError } from "../lib/api_error.js"
+import { BAD_REQUEST_CODE } from "../lib/error_codes.js"
 import prisma from "../lib/prisma.js"
 import { encryptPassword, generateAdminToken, verifyAdminToken, verifyPassword } from "../lib/security.js"
-import { OK } from "../lib/status_codes.js"
+import { BAD_REQUEST_STATUS, OK_STATUS } from "../lib/status_codes.js"
 import Validator from "../lib/validator.js"
 import asyncWrapper from "../lib/wrappers/async_wrapper.js"
 
 export const getAllManagersController = asyncWrapper(
     async (req, res) => {
-        const managers = await prisma.managers.findMany()
-        return res.status(OK).json(managers)
+        const managers = await prisma.managers.findMany({
+            include: {
+                permissions: true
+            }
+        })
+        return res.status(OK_STATUS).json(managers)
     }
 )
 
 export const createManagerController = asyncWrapper(
-    async (req, res) => {
+    async (req, res, next) => {
         const { name, username, password } = req.body
         await Validator.validateNotNull({ name, username, password })
+        
+        const existing_manager = await prisma.managers.findUnique({
+            where: {
+                username
+            }
+        })
+
+        if(existing_manager) {
+            return next(
+                new ApiError('a manager with this username already exists', BAD_REQUEST_CODE, BAD_REQUEST_STATUS)
+            )
+        }
 
         const hashed_password = await encryptPassword(password)
         const manager = await prisma.managers.create({
@@ -25,7 +43,7 @@ export const createManagerController = asyncWrapper(
             }
         })
 
-        return res.status(OK).json(manager)
+        return res.status(OK_STATUS).json(manager)
     }
 )
 
@@ -37,22 +55,26 @@ export const loginManagerController = asyncWrapper(
         const manager = await prisma.managers.findUnique({
             where: {
                 username
+            },
+
+            include: {
+                permissions: true
             }
         })
 
         if (!manager) {
-            return res.status(OK).json({ success: false, message: "Manager not found" })
+            return res.status(OK_STATUS).json({ success: false, message: "Manager not found" })
         }
 
         const is_password_verified = await verifyPassword(password, manager.password)
         
         if (!is_password_verified) {
-            return res.status(OK).json({ success: false, message: "Invalid password" })
+            return res.status(OK_STATUS).json({ success: false, message: "Invalid password" })
         }
 
         const token = await generateAdminToken({ id: manager.id })
 
-        return res.status(OK).json({ success: true, manager, token })
+        return res.status(OK_STATUS).json({ success: true, manager, token })
     }
 )
 
@@ -61,7 +83,7 @@ export const verifyManagerTokenController = asyncWrapper(
         const token = req.headers.authorization
 
         if (!token) {
-            return res.status(OK).json({ success: false, message: "You are not authenticated" })
+            return res.status(OK_STATUS).json({ success: false, message: "You are not authenticated" })
         }
 
         const payload = verifyAdminToken(token)
@@ -73,10 +95,10 @@ export const verifyManagerTokenController = asyncWrapper(
         })
 
         if (!manager) {
-            return res.status(OK).json({ success: false, message: "Manager not found" })
+            return res.status(OK_STATUS).json({ success: false, message: "Manager not found" })
         }
 
-        return res.status(OK).json({ success: true, manager })
+        return res.status(OK_STATUS).json({ success: true, manager })
     }
 )
 
@@ -89,7 +111,7 @@ export const deleteManagerController = asyncWrapper(
                 id: manager_id
             }
         })
-        return res.status(OK).json({ success: true })
+        return res.status(OK_STATUS).json({ success: true })
     }
 )
 
@@ -105,7 +127,7 @@ export const addManagerPermissionController = asyncWrapper(
                 value
             }
         })
-        return res.status(OK).json({ success: true })
+        return res.status(OK_STATUS).json({ success: true })
     }
 )
 
@@ -118,7 +140,7 @@ export const removeManagerPermissionController = asyncWrapper(
                 id: manager_id
             }
         })
-        return res.status(OK).json({ success: true })
+        return res.status(OK_STATUS).json({ success: true })
     }
 )
 
@@ -130,6 +152,6 @@ export const getManagersPermissionsController = asyncWrapper(
                 id: manager_id
             }
         })
-        return res.status(OK).json({ success: true, permissions })
+        return res.status(OK_STATUS).json({ success: true, permissions })
     }
 )
