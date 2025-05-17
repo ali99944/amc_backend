@@ -179,10 +179,10 @@ export const getManagersPermissionsController = asyncWrapper(
 
 export const deleteManager = asyncWrapper(
     async (req, res) => {
-        const { manager_id } = req.body
+        const { manager_id } = req.params
         await prisma.managers.delete({
             where: {
-                id: manager_id
+                id: +manager_id
             }
         })
         return res.status(OK_STATUS).json({ success: true })
