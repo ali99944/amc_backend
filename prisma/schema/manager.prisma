@@ -8,6 +8,8 @@ model managers {
   name String
   username String @unique
   password String // Store hashed passwords only
+
+  email String?
   
   // Add last login tracking
   last_login DateTime?

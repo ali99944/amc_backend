@@ -19,7 +19,7 @@ export const getAllManagersController = asyncWrapper(
 
 export const createManagerController = asyncWrapper(
     async (req, res, next) => {
-        const { name, username, password } = req.body
+        const { name, username, password, email } = req.body
         await Validator.validateNotNull({ name, username, password })
         
         const existing_manager = await prisma.managers.findUnique({
@@ -39,6 +39,7 @@ export const createManagerController = asyncWrapper(
             data: {
                 name,
                 username,
+                email,
                 password: hashed_password
             }
         })
