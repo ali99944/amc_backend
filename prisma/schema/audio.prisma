@@ -11,7 +11,7 @@ model audios {
   song songs? @relation(fields: [song_id], references: [id])
   
   created_at DateTime @default(now())
-  updated_at DateTime?
+  updated_at DateTime? @updatedAt
 }
 
 model audio_metadata {
@@ -26,5 +26,5 @@ model audio_metadata {
   audio audios?
   
   created_at DateTime @default(now())
-  updated_at DateTime?
+  updated_at DateTime? @updatedAt
 }

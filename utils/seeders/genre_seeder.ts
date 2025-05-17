@@ -59,7 +59,6 @@ export async function seed_genres() {
                 data: {
                     name: genre.name,
                     image: genre.image,
-                    created_at: getCurrentDate()
                 }
             })
         })

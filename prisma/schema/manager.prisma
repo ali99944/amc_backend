@@ -17,7 +17,7 @@ model managers {
   role manager_role @default(admin)
   
   created_at DateTime @default(now())
-  updated_at DateTime?
+  updated_at DateTime? @updatedAt
 }
 
 model manager_permissions {

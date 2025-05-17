@@ -71,7 +71,6 @@ export async function seed_artists() {
                     name: artist.name,
                     image: artist.image,
                     bio: artist.bio,
-                    created_at: getCurrentDate()
                 }
             })
         })

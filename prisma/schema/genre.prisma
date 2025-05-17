@@ -11,6 +11,6 @@ model genres {
 
   artist_genres artist_genre[]
 
-  created_at String
-  updated_at String?
+  created_at DateTime @default(now())
+  updated_at DateTime? @updatedAt
 }
