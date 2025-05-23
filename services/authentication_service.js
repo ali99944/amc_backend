@@ -1,11 +1,14 @@
+import moment from "moment"
+import { ApiError } from "../lib/api_error.js"
 import { compiled_mail_activation_template, host, port } from "../lib/configs.js"
 import { getCurrentDate } from "../lib/date.js"
+import { BAD_REQUEST_CODE, NOT_FOUND_CODE } from "../lib/error_codes.js"
 import prisma from "../lib/prisma.js"
 import { generateRandomString } from "../lib/random.js"
 import { encryptPassword, verifyPassword } from "../lib/security.js"
 import { sendMail } from "../lib/smtp_service.js"
+import { BAD_REQUEST_STATUS, NOT_FOUND_STATUS } from "../lib/status_codes.js"
 import promiseAsyncWrapper from "../lib/wrappers/promise_async_wrapper.js"
-import CustomError from "../utils/custom_error.js"
 
 const sendActivationLink = async ({ email }) => new Promise(
     async (resolve, reject) => {
@@ -16,7 +19,6 @@ const sendActivationLink = async ({ email }) => new Promise(
             data: {
                 email,
                 activation_code,
-                sent_at: getCurrentDate()
             }
         })
 
@@ -86,14 +88,14 @@ const loginUser = async ({ email, password }) => new Promise(
         })
 
         if(!user) {
-            const user_not_found = new CustomError('User not found', 404)
+            const user_not_found = new ApiError('User not found', NOT_FOUND_CODE, NOT_FOUND_STATUS)
             return reject(user_not_found)
         }
 
         const is_password_verified = await verifyPassword(password, user?.password)
 
         if(!is_password_verified) {
-            const password_invalid = new CustomError('Invalid password', 400)
+            const password_invalid = new ApiError('Invalid password', BAD_REQUEST_CODE, BAD_REQUEST_STATUS)
             return reject(password_invalid)
         }
 
@@ -104,13 +106,25 @@ const loginUser = async ({ email, password }) => new Promise(
 const registerUser = async ({ email, name, password, genres, artists, birth_date, gender }) => new Promise(
     promiseAsyncWrapper(
         async (resolve, reject) => {
+            const existing_user = await prisma.users.findFirst({
+                where: {
+                    email
+                }
+            })
+
+            if (existing_user) {
+                const user_already_exists = new ApiError('User already exists', BAD_REQUEST_CODE, BAD_REQUEST_STATUS)
+                return reject(user_already_exists)
+            }
+
+            const date = moment(birth_date, 'YYYY-MM-DD')
             const user = await prisma.users.create({
                 data: {
                     email,
                     name,
                     password: await encryptPassword(password),
                     gender: gender,
-                    birth_date: birth_date,
+                    birth_date: date.toISOString(),
                     genre_interests: {
                         createMany: {
                             data: genres.map(gen => {
@@ -129,7 +143,6 @@ const registerUser = async ({ email, name, password, genres, artists, birth_date
                             })
                         }
                     },
-                    joined_at: getCurrentDate(),
                     role: 'basic'
                 }
             })

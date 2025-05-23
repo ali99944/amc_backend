@@ -30,14 +30,15 @@ const main = async () => {
             (await import('./routes/manager_route.js')).default,
             (await import('./routes/artist_route.js')).default,
             // (await import('./routes/authentication_route.js')).default,
-            // (await import('./routes/users_route.js')).default,
+            (await import('./routes/users_route.js')).default,
+            (await import('./routes/user_auth_route.js')).default,
             // (await import('./routes/songs_route.js')).default,
-            // (await import('./routes/genre_route.js')).default,
+            (await import('./routes/genre_route.js')).default,
             // (await import('./routes/playlist_route.js')).default,
             // (await import('./routes/settings_route.js')).default,
             // (await import('./routes/analytics_route.js')).default,
             // (await import('./routes/statistics_route.js')).default,
-            // (await import('./routes/user_lists_route.js')).default
+            (await import('./routes/users_list_route.js')).default
         )
 
         app.get('*', (req ,res) => {

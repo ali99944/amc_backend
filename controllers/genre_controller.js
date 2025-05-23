@@ -1,8 +1,9 @@
+import { ApiError } from "../lib/api_error.js"
+import { BAD_REQUEST_CODE } from "../lib/error_codes.js"
 import { BAD_REQUEST_STATUS, OK_STATUS } from "../lib/status_codes.js"
 import Validator from "../lib/validator.js"
 import asyncWrapper from "../lib/wrappers/async_wrapper.js"
 import { createGenre, deleteGenre, getAllGenres, updateGenre } from "../services/genre_service.js"
-import CustomError from "../utils/custom_error.js"
 
 
 export const getAllGenresController = asyncWrapper(
@@ -20,7 +21,7 @@ export const createGenreController = asyncWrapper(
         const image_file = req.file
 
         if(!image_file) {
-            const image_missing_error = new CustomError("Image is required", BAD_REQUEST_STATUS)
+            const image_missing_error = new ApiError("Image is required", BAD_REQUEST_CODE, BAD_REQUEST_STATUS)
             return next(image_missing_error)
         }
         await Validator.validateNotNull({ name })        

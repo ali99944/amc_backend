@@ -18,7 +18,6 @@ export const createGenre = async ({ name, image }) => new Promise(
             data: {
                 name: name,
                 image: image,
-                created_at: getCurrentDate()
             }
         })
 
@@ -49,7 +48,6 @@ export const updateGenre = async ({
             data: {
                 name: payload.name,
                 image: payload.image ?? undefined,
-                updated_at: getCurrentDate()
             }
         })
 

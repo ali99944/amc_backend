@@ -13,8 +13,14 @@ export const registerUserController = asyncWrapper(
         // return res.json("ok")
         
         await Validator.validateNotNull({ email, name, password, birth_date, gender })
-        await Validator.isArray(genres)
-        await Validator.isArray(artists)
+        await Validator.isArray(genres, {
+            arrayName: 'genres',
+            minLength: 0,
+        })
+
+        await Validator.isArray(artists, {
+            arrayName: 'artists'
+        })
         await Validator.isEnum(gender, ['male', 'female', 'other'], "gender must be either 'male', 'female' or 'other'")
         // await Validator.minArrayLength(genres, 3, "genres length must be at least 3")
 
