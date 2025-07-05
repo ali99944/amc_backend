@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>{{title}}</title>
+  <style>
+    body { font-family: 'Amiri', serif; margin: 0; padding: 20mm; background-color: #fff; }
+    h1 { color: #1DB954; text-align: center; }
+    h2 { color: #333; }
+    p { color: #666; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: right; }
+    th { background-color: #1DB954; color: white; }
+    .header { text-align: center; margin-bottom: 20px; }
+    .footer { text-align: center; margin-top: 20px; font-size: 12px; color: #999; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>{{title}}</h1>
+    <p>{{description}}</p>
+  </div>
+  <h2>تحليلات المستخدمين</h2>
+  <table>
+    <tr>
+      <th>المعرف</th>
+      <th>الاسم</th>
+      <th>التسجيلات</th>
+      <th>المستخدمون النشطون</th>
+    </tr>
+    {{#each users}}
+    <tr>
+      <td>{{id}}</td>
+      <td>{{name}}</td>
+      <td>{{registrations}}</td>
+      <td>{{active}}</td>
+    </tr>
+    {{/each}}
+  </table>
+  <div class="footer">
+    <p>تم الإنشاء بواسطة مركز علي الإعلامي</p>
+  </div>
+</body>
+</html>

@@ -1,13 +1,20 @@
 model user_playlists {
-    id        Int     @id @default(autoincrement())
-    user_id   Int
-    user      users   @relation(fields: [user_id], references: [id])
-    playlist_id Int
-    playlist_name String
-    playlist_cover_url String
-    playlist_description String
-    playlist_songs_count Int
-
-    @@map("user_playlists")
+  id            Int                 @id @default(autoincrement())
+  name          String
+  description   String?
+  image         String?
+  user_id       Int                 // Required for user playlists
+  user          users               @relation(fields: [user_id], references: [id])
+  created_at    DateTime            @default(now())
+  updated_at    DateTime?           @updatedAt
+  songs         user_playlist_song[]
 }
 
+model user_playlist_song {
+  id              Int           @id @default(autoincrement())
+  user_playlist_id Int
+  song_id         Int
+  user_playlist    user_playlists @relation(fields: [user_playlist_id], references: [id])
+  song            songs         @relation(fields: [song_id], references: [id])
+  @@unique([user_playlist_id, song_id])
+}

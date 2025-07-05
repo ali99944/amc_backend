@@ -1,0 +1,19 @@
+model user_settings {
+  id                  Int      @id @default(autoincrement())
+  user_id              Int      @unique
+  user                users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  data_saver           Boolean  @default(true)
+  crossfade            Boolean  @default(false)
+  gapless_playback     Boolean  @default(true)
+  allow_explicit_content Boolean @default(false)
+  show_unplayable_songs Boolean  @default(true)
+  normalize_volume     Boolean  @default(false)
+
+  shuffle_playback Boolean  @default(false)
+  repeat_playback   Boolean  @default(false)
+
+  play_next_song_automatically Boolean  @default(true)
+  created_at           DateTime @default(now())
+  updated_at           DateTime @updatedAt
+}
+

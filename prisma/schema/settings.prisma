@@ -1,7 +1,0 @@
-model settings {
-    id Int @id @default(autoincrement())
-    key String @unique
-
-    controls Json
-    updated_at String?
-}

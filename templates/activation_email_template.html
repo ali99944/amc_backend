@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Activate Your AMC ORG Account</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      border: 1px solid #eee
+    }
+    .header {
+      text-align: center;
+      padding: 20px 0;
+    }
+    .header h1 {
+      color: #1a1a1a;
+      margin: 0;
+    }
+    .content {
+      padding: 20px;
+      text-align: center;
+    }
+    .content h2 {
+      color: #333333;
+      margin-top: 0;
+    }
+    .content p {
+      color: #666666;
+      line-height: 1.6;
+    }
+    .otp {
+      font-size: 24px;
+      font-weight: bold;
+      color: #007bff;
+      margin: 20px 0;
+      letter-spacing: 2px;
+    }
+    .button {
+      display: inline-block;
+      padding: 12px 24px;
+      background-color: #007bff;
+      color: #ffffff;
+      text-decoration: none;
+      border-radius: 4px;
+      margin: 20px 0;
+    }
+    .footer {
+      text-align: center;
+      padding: 20px;
+      color: #999999;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>AMC ORG</h1>
+    </div>
+    <div class="content">
+      <h2>Welcome, {{USER_NAME}}!</h2>
+      <p>Thank you for joining AMC ORG. To activate your account, please use the one-time password (OTP) below:</p>
+      <div class="otp">{{OTP}}</div>
+      <p>This OTP is valid for 15 minutes. Enter it in the app to complete your account activation.</p>
+      <a href="#" class="button">Activate Now</a>
+      <p>If you didn’t request this email, please ignore it or contact our support team.</p>
+    </div>
+    <div class="footer">
+      <p>&copy; 2025 AMC ORG. All rights reserved.</p>
+      <p>Support: support@musicapp.com</p>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,15 +1,4 @@
-enum user_status {
-    active
-    inactive
-    banned
-}
-
-enum user_role {
-  basic
-  premium
-}
-
-enum gender {
+enum Gender {
   male
   female
   other
@@ -17,105 +6,45 @@ enum gender {
 
 
 model users {
-  id Int @id @default(autoincrement())
-  name String
-  email String @unique
-  password String
-  
-  // With these
-  joined_at DateTime @default(now())
-  updated_at DateTime? @updatedAt
-  activated_at DateTime?
+  id              Int            @id @default(autoincrement())
+  name            String
+  email           String         @unique
+  password        String         // Hashed with Argon2
+  joined_at       DateTime       @default(now())
+  updated_at      DateTime?      @updatedAt
+  activated_at    DateTime?
   last_login_time DateTime?
-  birth_date DateTime
-
-  role user_role @default(basic)
-
-  status user_status @default(inactive)
-
-  songs_liked song_likes[]
-  genre_interests user_genre_interests[]
-  user_artist_interests user_artist_interests[]
-  artists_followed artist_followers[]
-  favorite user_favorites[]
-  playlists user_playlists[]
-
-  gender gender
-
-  // Existing fields...
-  
-  // Add profile picture
+  birth_date      DateTime
+  gender          Gender
   profile_picture String?
-  
-  // Add phone number
-  phone_number String?
-  
-  // Add soft delete
-  deleted_at DateTime?
-  
-  // Add two-factor auth fields
-  two_factor_enabled Boolean @default(false)
-  two_factor_secret String?
-  
-  // Add relationships to playlists
-  user_playlists playlists[]
+  phone_number    String?
+  deleted_at      DateTime?
+  is_banned       Boolean        @default(false)
+  is_active       Boolean        @default(false)
+  settings        user_settings?
 
-  user_settings user_settings?
-  payments payments[]
-  subscriptions subscriptions[]
+  user_playlists user_playlists[]
 
+  song_plays song_plays[]
+
+  favorite_songs  user_favorite_songs[]
+  favorite_artists user_favorite_artists[]
+  favorite_albums user_favorite_albums[]
+  genre_interests user_genre_interests[]
+  artist_interests user_artist_interests[]
+
+  UserPlayHistory UserPlayHistory[]
+
+  recommendations recommendations[]
 }
 
-model user_settings {
-  id Int @id @default(autoincrement())
-  
-  // Add user relationship
-  user_id Int @unique
-  user users @relation(fields: [user_id], references: [id])
-  
-  // Add settings fields
-  theme String @default("light")
-  notifications_enabled Boolean @default(true)
-  language String @default("en")
-  auto_play Boolean @default(true)
-  
-  created_at DateTime @default(now())
-  updated_at DateTime?
-}
 
 model verification_codes {
-  id Int @id @default(autoincrement())
-  activation_code String
-  email String
-
-  sent_at DateTime
+  id              Int       @id @default(autoincrement())
+  activation_code String    // OTP for activation or password reset
+  email           String
+  type            String    // 'activation' or 'password_reset'
+  sent_at         DateTime  @default(now())
+  expires_at      DateTime  // OTP expiration
 }
 
-model user_genre_interests {
-  id Int @id @default(autoincrement())
-  genre_id Int
-  genre genres @relation(fields: [genre_id], references: [id])
-
-  user_id Int
-  user users @relation(fields: [user_id], references: [id])
-}
-
-model user_artist_interests {
-  id Int @id @default(autoincrement())
-  artist_id Int
-  artist artists @relation(fields: [artist_id], references: [id])
-
-  user_id Int
-  user users @relation(fields: [user_id], references: [id])
-}
-
-
-model user_favorites {
-    id Int @id @default(autoincrement())
-
-    song_id Int
-    song songs @relation(fields: [song_id], references: [id])
-
-    user_id Int
-    user users @relation(fields: [user_id], references: [id])
-}

@@ -1,12 +1,11 @@
-import express from "express";
-import { getOverviewController, getRecentUsersController, getTopSongsController } from "../controllers/statistics_controller.js";
+// statistics_route.js
+import express from 'express';
+import { getOverviewStatisticsController } from '../controllers/statistics_controller.js';
+import { verifyManagerToken } from '../middlewares/manager_auth_middleware.js';
 
 const router = express.Router();
 
-router.get('/statistics/overview', getOverviewController)
+// Manager-only route
+router.get('/statistics/overview', verifyManagerToken, getOverviewStatisticsController);
 
-router.get('/statistics/top-songs', getTopSongsController)
-
-router.get('/statistics/recent-users', getRecentUsersController)
-
-export default router
+export default router;

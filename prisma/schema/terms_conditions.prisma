@@ -1,0 +1,21 @@
+model terms_conditions {
+  id        Int                      @id @default(1)
+  title     String
+  updated_at DateTime                    @updatedAt @map("updated_at")
+  sections  terms_and_conditions_section[]
+
+  @@map("terms_and_conditions")
+}
+
+
+model terms_and_conditions_section {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  points      String[]
+
+  terms   terms_conditions @relation(fields: [terms_id], references: [id])
+  terms_id Int
+
+  @@map("terms_and_conditions_sections")
+}

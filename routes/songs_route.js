@@ -1,17 +1,19 @@
-import express from "express"
-import { createSongController, deleteSongController, getAllSongsController, getArtistSongsController, updateSongController } from "../controllers/song_controller.js"
-import { createMulterStorage } from "../services/multer_storage.js"
+import express from 'express';
+import { createSongController, deleteSongController, getAllSongsController, updateSongController } from '../controllers/song_controller.js';
+import { createMulterStorage } from '../services/multer_storage.js';
 
-const router = express.Router()
+// song_route.js
+const router = express.Router();
 
-router.get('/songs', getAllSongsController)
-router.post('/songs', createMulterStorage('audios', 'songs').single('audio'), createSongController)
+// Configure multer for both audio and image uploads
+const upload = createMulterStorage('public', 'audios').fields([
+  { name: 'audio', maxCount: 1 },
+  { name: 'image', maxCount: 1 },
+]);
 
+router.get('/songs', getAllSongsController);
+router.post('/songs', upload, createSongController);
+router.put('/songs/:id', upload, updateSongController);
+router.delete('/songs/:id', deleteSongController);
 
-router.put('/songs/:id', createMulterStorage('audios', 'songs').single('audio'), updateSongController)
-router.delete('/songs/:id', deleteSongController)
-
-
-router.get('/artists/:id/songs', getArtistSongsController)
-
-export default router
+export default router;

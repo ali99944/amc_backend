@@ -1,0 +1,23 @@
+model tags {
+    id          String  @id @default(cuid())
+    name        String
+    description String?
+
+    created_at DateTime @default(now())
+    updated_at DateTime @default(now())
+
+    song_tags song_tags[]
+}
+
+
+model song_tags {
+    id        Int     @id @default(autoincrement())
+    song_id   Int
+    tag_id    String
+
+    song      songs   @relation(fields: [song_id], references: [id])
+    tag       tags    @relation(fields: [tag_id], references: [id])
+
+    @@unique([song_id, tag_id])
+}
+

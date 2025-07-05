@@ -1,8 +1,13 @@
-import express from 'express'
-import { getUserGrowthController } from '../controllers/analytics_controller.js'
+// analytics_route.js
+import express from 'express';
+import { getSongPlaysAnalyticsController, getUserActivityAnalyticsController, getRetentionAnalyticsController } from '../controllers/analytics_controller.js';
+import { verifyManagerToken } from '../middlewares/manager_auth_middleware.js';
 
-const router = express.Router()
+const router = express.Router();
 
-router.get('/analytics/user-growth', getUserGrowthController)
+// Manager-only routes
+router.get('/analytics/song-plays', verifyManagerToken, getSongPlaysAnalyticsController);
+router.get('/analytics/user-activity', verifyManagerToken, getUserActivityAnalyticsController);
+router.get('/analytics/retention', verifyManagerToken, getRetentionAnalyticsController);
 
-export default router
+export default router;

@@ -1,43 +1,55 @@
-model songs {
-  id Int @id @default(autoincrement())
-  genre_id Int
-  genre genres @relation(fields: [genre_id], references: [id])
+model audio {
+  id           Int       @id @default(autoincrement())
+  file_path    String    // Path to audio file (e.g., public/audios/song.mp3)
+  format       String?   // e.g., mp3, wav
+  file_size    Int?      // Size in bytes
+  duration     Float?    // Duration in seconds
+  created_at   DateTime  @default(now())
+  updated_at   DateTime? @updatedAt
 
-  title String
-  audio_src String
-
-  total_likes Int @default(0)
-  total_plays Int @default(0)
-
-  cover_image String
-
-  likes song_likes[]
-  user_favorites user_favorites[]
-
-  artist_id Int
-  artist artists @relation(fields: [artist_id], references: [id])
-
-  // album_id Int?
-  // album albums? @relation(fields: [album_id], references: [id])
-
-  playlists playlist_songs[]
-
-  lyrics String
-
-  audio audios?
-
-  created_at DateTime @default(now())
-  updated_at DateTime? @updatedAt
-  release_date DateTime
-
-  albums albums[]
+  song_id Int? @unique
+  song songs? @relation(fields: [song_id], references: [id])
 }
 
-model song_likes {
-  id Int @id @default(autoincrement())
-  song_id Int
-  user_id Int
+model songs {
+  id           Int       @id @default(autoincrement())
+  title        String
+  image        String?
+  artist_id    Int?
+  artist       artists?   @relation(fields: [artist_id], references: [id])
+  is_active    Boolean   @default(true)
+  created_at   DateTime  @default(now())
+  updated_at   DateTime? @updatedAt
+  
+  genre_id   Int
+  genre      genres   @relation(fields: [genre_id], references: [id])
 
-  song songs @relation(fields: [song_id], references: [id])
-  user users @relation(fields: [user_id], references: [id])
+  album_id Int?
+  album albums? @relation(fields: [album_id], references: [id])
+
+  playlist_song playlist_song[]
+  user_playlist_song user_playlist_song[]
+  song_plays song_plays[]
+  user_favorite_songs user_favorite_songs[]
+
+  lyrics String?
+  description String?
+  release_date String?
+
+  audio audio?
+
+  UserPlayHistory UserPlayHistory[]
+
+  copyrights copyrights[]
+
+  song_tags song_tags[]
+}
+
+model song_plays {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  song_id    Int
+  played_at  DateTime @default(now())
+  user       users    @relation(fields: [user_id], references: [id])
+  song       songs    @relation(fields: [song_id], references: [id])
 }

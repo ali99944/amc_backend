@@ -1,0 +1,12 @@
+model UserPlayHistory {
+  id        Int      @id @default(autoincrement())
+  user      users     @relation(fields: [user_id], references: [id])
+  user_id    Int
+  song      songs     @relation(fields: [song_id], references: [id])
+  song_id    Int
+  playedAt  DateTime @default(now())
+
+  @@index([user_id])
+  @@index([song_id])
+}
+

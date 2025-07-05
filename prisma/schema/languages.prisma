@@ -1,0 +1,7 @@
+model languages {
+  id       Int     @id @default(autoincrement())
+  name     String
+  code     String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}

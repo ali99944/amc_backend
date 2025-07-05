@@ -1,0 +1,15 @@
+enum ReportType {
+  user_analytics
+  music_performance
+  playlist_analytics
+}
+
+model reports {
+  id              Int         @id @default(autoincrement())
+  report_name     String
+  description     String?
+  report_type     ReportType
+  created_at      DateTime    @default(now())
+  report_file_size Int
+  report_url      String
+}

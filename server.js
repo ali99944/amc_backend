@@ -17,10 +17,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use('/storage', express.static(path.join(__dirname, './public')))
+app.use('/public', express.static(path.join(__dirname, './public')))
 
 app.use(compression())
 app.use(cookieParser())
+
 
 const main = async () => {
     try{
@@ -29,16 +30,25 @@ const main = async () => {
             '/api',
             (await import('./routes/manager_route.js')).default,
             (await import('./routes/artist_route.js')).default,
-            // (await import('./routes/authentication_route.js')).default,
-            (await import('./routes/users_route.js')).default,
-            (await import('./routes/user_auth_route.js')).default,
-            // (await import('./routes/songs_route.js')).default,
+            (await import('./routes/songs_route.js')).default,
             (await import('./routes/genre_route.js')).default,
-            // (await import('./routes/playlist_route.js')).default,
-            // (await import('./routes/settings_route.js')).default,
-            // (await import('./routes/analytics_route.js')).default,
-            // (await import('./routes/statistics_route.js')).default,
-            (await import('./routes/users_list_route.js')).default
+            (await import('./routes/playlist_route.js')).default,
+            (await import('./routes/user_playlist_route.js')).default,
+            (await import('./routes/analytics_route.js')).default,
+            (await import('./routes/statistics_route.js')).default,
+            (await import('./routes/recommendation_route.js')).default,
+            (await import('./routes/user_route.js')).default,
+            (await import('./routes/manager_route.js')).default,
+            (await import('./routes/interests_route.js')).default,
+            (await import('./routes/favorites_route.js')).default,
+            (await import('./routes/user_settings_route.js')).default,
+            (await import('./routes/settings_route.js')).default,
+            (await import('./routes/report_route.js')).default,
+            (await import('./routes/terms_conditions_route.js')).default,
+            (await import('./routes/privacy_policy_route.js')).default,
+            (await import('./routes/contact_messages_route.js')).default,
+            (await import('./routes/tag_route.js')).default,
+            (await import('./routes/language_route.js')).default,
         )
 
         app.get('*', (req ,res) => {
@@ -51,7 +61,7 @@ const main = async () => {
         app.use(errorHandler)
 
         app.listen(port, () => console.log(`[server] listening on ${host}:${port}`))
-    }catch(err){
+    }catch(err){        
         logger.error(err.message)
     }
 }

@@ -1,32 +1,16 @@
-enum manager_role {
-  admin
+enum ManagerRole {
   super_admin
+  admin
+  staff
 }
 
 model managers {
-  id Int @id @default(autoincrement())
-  name String
-  username String @unique
-  password String // Store hashed passwords only
-
-  email String?
-  
-  // Add last login tracking
-  last_login DateTime?
-  
-  permissions manager_permissions[]
-  
-  role manager_role @default(admin)
-  
-  created_at DateTime @default(now())
-  updated_at DateTime? @updatedAt
-}
-
-model manager_permissions {
-  id Int @id @default(autoincrement())
-  name String
-  value String @unique
-
-  manager_id Int
-  manager managers @relation(fields: [manager_id], references: [id])
+  id         Int          @id @default(autoincrement())
+  username      String       @unique
+  password   String       // Hashed with Argon2
+  name       String
+  role       ManagerRole  @default(staff)
+  is_active  Boolean      @default(true)
+  created_at DateTime     @default(now())
+  updated_at DateTime?    @updatedAt
 }

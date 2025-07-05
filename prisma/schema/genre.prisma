@@ -1,18 +1,20 @@
 model genres {
-  id Int @id @default(autoincrement())
-  image String
-  name String
+  id            Int       @id @default(autoincrement())
+  image         String
+  name          String
+  description   String?   // New field from interface
+  color         String?   // New field from interface (e.g., hex code)
+  total_songs   Int       @default(0) // Maps to songs_count
+  is_active     Boolean   @default(true) // New field from interface
 
-  total_songs Int @default(0)
+
+  created_at    DateTime  @default(now())
+  updated_at    DateTime? @updatedAt
+
+  artists artist_genre[]
+  albums album_genre[]
+
+  user_genre_interests user_genre_interests[]
 
   songs songs[]
-  user_interests user_genre_interests[]
-  // albums albums[]
-
-  artist_genres artist_genre[]
-
-  created_at DateTime @default(now())
-  updated_at DateTime? @updatedAt
-
-  albums albums[]
 }

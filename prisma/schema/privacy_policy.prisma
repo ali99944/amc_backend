@@ -1,0 +1,21 @@
+model privacy_policy {
+  id        Int                 @id @default(1)
+  title     String
+  updated_at DateTime               @updatedAt @map("updated_at")
+  sections  privacy_policy_section[]
+
+  @@map("privacy_policies")
+}
+
+
+model privacy_policy_section {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  points      String[]
+
+  policy   privacy_policy @relation(fields: [policy_id], references: [id])
+  policy_id Int
+
+  @@map("privacy_policy_sections")
+}
