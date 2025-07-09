@@ -3,7 +3,7 @@
 import {  OK_STATUS } from '../lib/status_codes.js';
 import Validator from '../lib/validator.js';
 import asyncWrapper from '../lib/wrappers/async_wrapper.js';
-import { updateUser, getUserById, deleteUser, getAllUsers } from '../services/user_service.js';
+import { updateUser, getUserById, deleteUser, getAllUsers, deleteUserWithRelatedData } from '../services/user_service.js';
 
 export const getCurrentUserController = asyncWrapper(
   async (req, res) => {
@@ -87,5 +87,14 @@ export const getAllUsersController = asyncWrapper(
   async (req, res) => {
     const users = await getAllUsers();
     return res.status(OK_STATUS).json(users);
+  }
+);
+
+
+export const deleteUserWithRelatedDataController = asyncWrapper(
+  async (req, res) => {
+    const { id } = req.params;
+    await deleteUserWithRelatedData(id);
+    return res.status(OK_STATUS).json({ message: 'User and related data deleted successfully' });
   }
 );

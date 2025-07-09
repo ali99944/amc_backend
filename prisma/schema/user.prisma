@@ -29,7 +29,6 @@ model users {
 
   favorite_songs  user_favorite_songs[]
   favorite_artists user_favorite_artists[]
-  favorite_albums user_favorite_albums[]
   genre_interests user_genre_interests[]
   artist_interests user_artist_interests[]
 

@@ -1,5 +1,5 @@
 import express from 'express';
-import { createSongController, deleteSongController, getAllSongsController, updateSongController } from '../controllers/song_controller.js';
+import { createSongController, deleteSongController, getAllSongsController, getSongByIdController, updateSongController } from '../controllers/song_controller.js';
 import { createMulterStorage } from '../services/multer_storage.js';
 
 // song_route.js
@@ -12,6 +12,7 @@ const upload = createMulterStorage('public', 'audios').fields([
 ]);
 
 router.get('/songs', getAllSongsController);
+router.get('/songs/:id', getSongByIdController);
 router.post('/songs', upload, createSongController);
 router.put('/songs/:id', upload, updateSongController);
 router.delete('/songs/:id', deleteSongController);

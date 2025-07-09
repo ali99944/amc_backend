@@ -75,26 +75,6 @@ export const createArtist = async ({ name, bio, image, is_featured, genre_ids })
 export const deleteArtist = async (id) => new Promise(
     promiseAsyncWrapper(
         async (resolve) => {
-            await prisma.albums.updateMany({
-                where: {
-                    artist_id: +id
-                },
-
-                data: {
-                    artist_id: null
-                }
-            })
-
-            await prisma.songs.updateMany({
-                where: {
-                    artist_id: +id
-                },
-
-                data: {
-                    artist_id: null
-                }
-            })
-
             const artist = await prisma.artists.delete({
                 where: {
                     id: +id,

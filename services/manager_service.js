@@ -14,11 +14,13 @@ export const getAllManagers = async () => new Promise(
       // Map to interface
       const mappedManagers = managers.map(manager => ({
         id: manager.id,
-        email: manager.email,
+        username: manager.username,
         name: manager.name,
         role: manager.role,
         is_active: manager.is_active,
-        created_at: manager.created_at.toISOString(),
+        created_at: manager.created_at,
+        updated_at: manager.updated_at,
+        last_login: (new Date()).toISOString
       }));
 
       return resolve(mappedManagers);

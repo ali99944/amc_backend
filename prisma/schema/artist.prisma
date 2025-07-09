@@ -9,7 +9,6 @@ model artists {
   updated_at      DateTime? @updatedAt
   songs           songs[]
   total_followers Int       @default(0)
-  albums          albums[]
 
   genres          artist_genre[]
   user_favorite_artists user_favorite_artists[]
@@ -19,7 +18,8 @@ model artists {
 model artist_genre {
   id         Int      @id @default(autoincrement())
   genre_id   Int
-  genre      genres   @relation(fields: [genre_id], references: [id])
+  genre      genres   @relation(fields: [genre_id], references: [id], onDelete: Cascade)
+
   artist_id  Int
-  artist     artists  @relation(fields: [artist_id], references: [id])
+  artist     artists  @relation(fields: [artist_id], references: [id], onDelete: Cascade)
 }

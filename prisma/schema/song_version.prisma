@@ -1,0 +1,15 @@
+model audio_versions {
+    id Int @id @default(autoincrement())
+
+    song_id Int
+    song songs @relation(fields: [song_id], references: [id], onDelete: Cascade)
+
+    quality String
+    format String
+    file_url String
+    file_size Float
+    bitrate Float
+
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+}

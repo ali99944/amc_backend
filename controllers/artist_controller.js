@@ -1,6 +1,7 @@
 // artist_controller.js
 import { ApiError } from "../lib/api_error.js";
 import { BAD_REQUEST_CODE } from "../lib/error_codes.js";
+import { parseBoolean } from "../lib/parser.js";
 import { BAD_REQUEST_STATUS, OK_STATUS } from "../lib/status_codes.js";
 import Validator from "../lib/validator.js";
 import asyncWrapper from "../lib/wrappers/async_wrapper.js";
@@ -44,7 +45,7 @@ export const createArtistController = asyncWrapper(
             name,
             bio: bio || '',
             image: 'images/artists/' + image_file.filename,
-            is_featured: is_featured == "true" || false,
+            is_featured: parseBoolean(is_featured),
             genre_ids: genre_ids ? JSON.parse(genre_ids) : [],
         });
 
@@ -75,10 +76,10 @@ export const updateArtistController = asyncWrapper(
             await Validator.isText(bio, { minLength: 0, maxLength: 1000 });
         }
         if (is_featured !== undefined) {
-            await Validator.isEnum(is_featured, [true, false], "is_featured must be a boolean");
+            await Validator.isEnum(parseBoolean(is_featured), [true, false], "is_featured must be a boolean");
         }
         if (is_active !== undefined) {
-            await Validator.isEnum(is_active, [true, false], "is_active must be a boolean");
+            await Validator.isEnum(parseBoolean(is_active), [true, false], "is_active must be a boolean");
         }
         if (genre_ids) {
             const parsedGenres = JSON.parse(genre_ids || '[]');
@@ -94,8 +95,8 @@ export const updateArtistController = asyncWrapper(
                 name,
                 bio: bio || undefined,
                 image: image_file ? 'images/artists/' + image_file.filename : undefined,
-                is_featured: is_featured !== undefined ? is_featured : undefined,
-                is_active: is_active !== undefined ? is_active : undefined,
+                is_featured: is_featured !== undefined ? parseBoolean(is_featured) : undefined,
+                is_active: is_active !== undefined ? parseBoolean(is_active) : undefined,
                 genre_ids: genre_ids ? JSON.parse(genre_ids) : undefined,
             },
         });

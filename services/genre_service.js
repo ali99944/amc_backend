@@ -29,6 +29,12 @@ export const getAllGenres = async () => new Promise(
 export const createGenre = async ({ name, description, image, color }) => new Promise(
     promiseAsyncWrapper(
         async (resolve) => {
+            console.log(name);
+            console.log(description);
+            console.log(image);
+            console.log(color);
+            
+
             const genre = await prisma.genres.create({
                 data: {
                     name,
@@ -46,7 +52,7 @@ export const createGenre = async ({ name, description, image, color }) => new Pr
                 description: genre.description || '',
                 image: genre.image,
                 color: genre.color || '#000000',
-                songs_count: genre.total_songs,
+                // songs_count: genre.total_songs,
                 artists_count: 0, // New genre has no artists initially
                 created_at: genre.created_at.toISOString(),
                 is_active: genre.is_active,
@@ -94,10 +100,7 @@ export const updateGenre = async ({ id, payload }) => new Promise(
                     image: payload.image ?? undefined,
                     color: payload.color ?? undefined,
                     is_active: payload.is_active ?? undefined,
-                },
-                include: {
-                    artist_genres: true, // To compute artists_count
-                },
+                }
             });
 
             // Map to interface
@@ -107,8 +110,6 @@ export const updateGenre = async ({ id, payload }) => new Promise(
                 description: genre.description || '',
                 image: genre.image,
                 color: genre.color || '#000000',
-                songs_count: genre.total_songs,
-                artists_count: genre.artist_genres.length,
                 created_at: genre.created_at.toISOString(),
                 is_active: genre.is_active,
             };

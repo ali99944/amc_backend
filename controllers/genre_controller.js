@@ -1,5 +1,6 @@
 import { ApiError } from "../lib/api_error.js";
 import { BAD_REQUEST_CODE } from "../lib/error_codes.js";
+import { parseBoolean } from "../lib/parser.js";
 import { BAD_REQUEST_STATUS, OK_STATUS } from "../lib/status_codes.js";
 import Validator from "../lib/validator.js";
 import asyncWrapper from "../lib/wrappers/async_wrapper.js";
@@ -68,8 +69,10 @@ export const updateGenreController = asyncWrapper(
         if (color) {
             await Validator.isText(color, { pattern: /^#[0-9A-Fa-f]{6}$/, errorMessage: "Color must be a valid hex code (e.g., #FF0000)" });
         }
+
+        
         if (is_active !== undefined) {
-            await Validator.isEnum(is_active, [true, false], "is_active must be a boolean");
+            await Validator.isEnum(parseBoolean(is_active), [true, false], "is_active must be a boolean");
         }
 
         const updatedGenre = await updateGenre({
@@ -79,7 +82,7 @@ export const updateGenreController = asyncWrapper(
                 description: description || undefined,
                 image: image_file ? 'images/genres/' + image_file.filename : undefined,
                 color: color || undefined,
-                is_active: is_active !== undefined ? is_active : undefined,
+                is_active: is_active !== undefined ? parseBoolean(is_active) : undefined,
             },
         });
 

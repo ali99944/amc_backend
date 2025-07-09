@@ -19,7 +19,7 @@ export const getAllSongs = async () => new Promise(
                 id: song.id,
                 title: song.title,
                 image: song.image,
-                // duration: song.audio.duration || 0,
+                release_date: song.release_date,
                 artist: song.artist,
                 genre: song.genre,
                 is_active: song.is_active,
@@ -31,7 +31,7 @@ export const getAllSongs = async () => new Promise(
     )
 );
 
-export const createSong = async ({ title, artist_id, audio_path, image, genre_ids }) => new Promise(
+export const createSong = async ({ title, artist_id, audio_path, image, genre_id, release_date }) => new Promise(
     promiseAsyncWrapper(
         async (resolve) => {
             // Get audio duration
@@ -44,6 +44,8 @@ export const createSong = async ({ title, artist_id, audio_path, image, genre_id
                     format: audio_path.split('.').pop(), // e.g., mp3
                     file_size: (await import('fs')).statSync('public/' + audio_path).size,
                     duration,
+
+                    song_id
                 },
             });
 
@@ -55,32 +57,17 @@ export const createSong = async ({ title, artist_id, audio_path, image, genre_id
                     artist_id,
                     audio_id: audio.id,
                     is_active: true,
-                    genres: genre_ids.length > 0 ? {
-                        create: genre_ids.map(id => ({
-                            genre_id: id,
-                        })),
-                    } : undefined,
+                    release_date,
+                    genre_id
                 },
                 include: {
-                    genres: true,
+                    genre: true,
                     audio: true,
                     artist: true,
                 },
             });
 
-            // Update artist's total_songs (if needed)
-            await prisma.artists.update({
-                where: { id: artist_id },
-                data: { total_songs: { increment: 1 } },
-            });
 
-            // Update genres' total_songs
-            if (genre_ids.length > 0) {
-                await prisma.genres.updateMany({
-                    where: { id: { in: genre_ids } },
-                    data: { total_songs: { increment: 1 } },
-                });
-            }
 
             // Map to interface
             const mappedSong = {
@@ -152,94 +139,32 @@ export const deleteSong = async (id) => new Promise(
 export const updateSong = async ({ id, payload }) => new Promise(
     promiseAsyncWrapper(
         async (resolve) => {
-            const { title, artist_id, audio_path, image, genre_ids, is_active } = payload;
+            const { title, artist_id, image, genre_id, is_active, release_date } = payload;
 
-            // Handle audio update
-            let audio_id = null;
-            if (audio_path) {
-                const duration = await getAudioDuration('public/' + audio_path);
-                const audio = await prisma.audio.create({
-                    data: {
-                        file_path: audio_path,
-                        format: audio_path.split('.').pop(),
-                        file_size: (await import('fs')).statSync('public/' + audio_path).size,
-                        duration,
-                    },
-                });
-                audio_id = audio.id;
+            const updateData = {
+                title,
+                image,
+                is_active,
+                release_date
+            };
+
+            if (artist_id != undefined) {
+                updateData.artist = {
+                    connect: { id: artist_id }
+                };
             }
 
-            // Handle genre updates
-            let genreUpdate = {};
-            if (genre_ids) {
-                // Get current genres
-                const currentGenres = await prisma.song_genre.findMany({
-                    where: { song_id: +id },
-                    select: { genre_id: true },
-                });
-                const currentGenreIds = currentGenres.map(g => g.genre_id);
-
-                // Delete existing genre associations
-                await prisma.song_genre.deleteMany({
-                    where: { song_id: +id },
-                });
-
-                // Create new genre associations
-                if (genre_ids.length > 0) {
-                    genreUpdate = {
-                        create: genre_ids.map(id => ({
-                            genre_id: id,
-                        })),
-                    };
-
-                    // Update total_songs for added/removed genres
-                    const addedGenres = genre_ids.filter(id => !currentGenreIds.includes(id));
-                    const removedGenres = currentGenreIds.filter(id => !genre_ids.includes(id));
-                    if (addedGenres.length > 0) {
-                        await prisma.genres.updateMany({
-                            where: { id: { in: addedGenres } },
-                            data: { total_songs: { increment: 1 } },
-                        });
-                    }
-                    if (removedGenres.length > 0) {
-                        await prisma.genres.updateMany({
-                            where: { id: { in: removedGenres } },
-                            data: { total_songs: { decrement: 1 } },
-                        });
-                    }
-                }
-            }
-
-            // Update artist total_songs if artist_id changes
-            if (artist_id) {
-                const currentSong = await prisma.songs.findUnique({
-                    where: { id: +id },
-                    select: { artist_id: true },
-                });
-                if (currentSong && currentSong.artist_id !== artist_id) {
-                    await prisma.artists.update({
-                        where: { id: currentSong.artist_id },
-                        data: { total_songs: { decrement: 1 } },
-                    });
-                    await prisma.artists.update({
-                        where: { id: artist_id },
-                        data: { total_songs: { increment: 1 } },
-                    });
-                }
+            if (genre_id != undefined) {
+                updateData.genre = {
+                    connect: { id: genre_id }
+                };
             }
 
             const song = await prisma.songs.update({
                 where: { id: +id },
-                data: {
-                    title,
-                    artist_id,
-                    audio_id,
-                    image,
-                    is_active,
-                    genres: genre_ids ? genreUpdate : undefined,
-                },
+                data: updateData,
                 include: {
-                    genres: true,
+                    genre: true,
                     audio: true,
                     artist: true,
                 },
@@ -250,9 +175,8 @@ export const updateSong = async ({ id, payload }) => new Promise(
                 id: song.id,
                 title: song.title,
                 image: song.image,
-                duration: song.audio.duration || 0,
+                duration: 0,
                 artist_id: song.artist_id,
-                genres_count: song.genres.length,
                 is_active: song.is_active,
                 created_at: song.created_at.toISOString(),
             };
@@ -263,3 +187,38 @@ export const updateSong = async ({ id, payload }) => new Promise(
 );
 
 
+
+
+export const getSongById = async (id) => new Promise(
+    promiseAsyncWrapper(
+        async (resolve) => {
+            const song = await prisma.songs.findUnique({
+                where: { id: +id },
+                include: {
+                    genre: true,
+                    audio: true,
+                    artist: true,
+                },
+            });
+
+            if (!song) {
+                throw new ApiError('Song not found', BAD_REQUEST_CODE, BAD_REQUEST_STATUS);
+            }
+
+            // Map to interface
+            const mappedSong = {
+                id: song.id,
+                title: song.title,
+                image: song.image,
+                duration: song?.audio?.duration || 0,
+                artist: song.artist,
+                genre: song.genre,
+                // genres_count: song.genre.length,
+                is_active: song.is_active,
+                created_at: song.created_at.toISOString(),
+            };
+
+            return resolve(mappedSong);
+        }
+    )
+);

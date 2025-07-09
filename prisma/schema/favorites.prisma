@@ -1,4 +1,3 @@
-// New models for favorites and interests
 model user_favorite_songs {
   user_id  Int
   song_id  Int
@@ -17,11 +16,3 @@ model user_favorite_artists {
   @@id([user_id, artist_id])
 }
 
-model user_favorite_albums {
-  user_id  Int
-  album_id Int
-  added_at DateTime @default(now())
-  user     users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  album    albums   @relation(fields: [album_id], references: [id], onDelete: Cascade)
-  @@id([user_id, album_id])
-}

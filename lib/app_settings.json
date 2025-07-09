@@ -5,17 +5,14 @@
     "logo": "http://10.0.2.2:4001/public/logo.png",
     "version": "1.0.0",
     "copyright": "Copyright 2023 Ali Media Center. All rights reserved.",
-
     "maintenance_mode": false,
     "support_email": "support@amc.com",
     "enable_offline_downloads": true
   },
-
   "social": {
     "enable_comments": true,
     "enable_following": true
   },
-
   "security": {
     "max_login_attempts": 5,
     "data_retention_days": 365

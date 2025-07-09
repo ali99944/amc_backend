@@ -1,31 +1,23 @@
-model audio {
-  id           Int       @id @default(autoincrement())
-  file_path    String    // Path to audio file (e.g., public/audios/song.mp3)
-  format       String?   // e.g., mp3, wav
-  file_size    Int?      // Size in bytes
-  duration     Float?    // Duration in seconds
-  created_at   DateTime  @default(now())
-  updated_at   DateTime? @updatedAt
-
-  song_id Int? @unique
-  song songs? @relation(fields: [song_id], references: [id])
-}
-
 model songs {
   id           Int       @id @default(autoincrement())
   title        String
   image        String?
-  artist_id    Int?
-  artist       artists?   @relation(fields: [artist_id], references: [id])
   is_active    Boolean   @default(true)
   created_at   DateTime  @default(now())
   updated_at   DateTime? @updatedAt
-  
-  genre_id   Int
-  genre      genres   @relation(fields: [genre_id], references: [id])
 
-  album_id Int?
-  album albums? @relation(fields: [album_id], references: [id])
+  is_explicit Boolean @default(false)
+  track_number String
+  original_audio audio?
+  
+
+  //relations
+  artist_id    Int?
+  artist       artists?   @relation(fields: [artist_id], references: [id], onDelete: SetNull)
+  
+  genre_id   Int?
+  genre      genres?   @relation(fields: [genre_id], references: [id], onDelete: SetNull)
+
 
   playlist_song playlist_song[]
   user_playlist_song user_playlist_song[]
@@ -36,13 +28,15 @@ model songs {
   description String?
   release_date String?
 
-  audio audio?
 
   UserPlayHistory UserPlayHistory[]
 
   copyrights copyrights[]
 
   song_tags song_tags[]
+
+
+  audio_versions audio_versions[]
 }
 
 model song_plays {

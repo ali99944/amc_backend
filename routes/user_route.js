@@ -1,6 +1,6 @@
 // user_route.js
 import express from 'express';
-import {  deleteUserController, getAllUsersController, getCurrentUserController, updateUserController } from '../controllers/user_controller.js';
+import {  deleteUserController, deleteUserWithRelatedDataController, getAllUsersController, getCurrentUserController, updateUserController } from '../controllers/user_controller.js';
 import { activateAccountController, changePasswordController, forgotPasswordController, loginUserController, logoutUserController, refreshTokenController, registerUserController, resetPasswordController, verifyOtpController } from '../controllers/user_auth_controller.js';
 import { verifyUserTokenMiddleware } from '../middlewares/user_auth_middleware.js';
 import { createMulterStorage } from '../services/multer_storage.js';
@@ -26,8 +26,8 @@ router.delete('/users/me', verifyUserTokenMiddleware, deleteUserController);
 router.post('/users/change-password', verifyUserTokenMiddleware, changePasswordController);
 
 // Manager routes (protected by manager token)
-router.put('/users/:id/ban', verifyManagerToken, restrictTo(PERMISSIONS.MANAGER.UPDATE), updateUserController);
-// router.get('/users', verifyManagerToken, restrictTo(PERMISSIONS.MANAGER.READ), getAllUsersController);
-router.get('/users', getAllUsersController);
+router.put('/users/:id/ban', verifyManagerToken, updateUserController);
+router.get('/users', verifyManagerToken, getAllUsersController);
+router.delete('/users/:id', verifyManagerToken, deleteUserWithRelatedDataController);
 
 export default router;

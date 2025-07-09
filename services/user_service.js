@@ -209,3 +209,24 @@ export const getAllUsers = async () => new Promise(
     }
   )
 );
+
+
+export const deleteUserWithRelatedData = async (id) => new Promise(
+  promiseAsyncWrapper(
+    async (resolve) => {
+      const user = await prisma.users.findUnique({ where: { id: +id } });
+      if (!user || user.deleted_at) {
+        throw new ApiError('User not found', BAD_REQUEST_CODE, BAD_REQUEST_STATUS);
+      }
+
+      await prisma.user_artist_interests.deleteMany({ where: { user_id: +id } });
+      await prisma.user_playlists.deleteMany({ where: { user_id: +id } });
+      await prisma.users.update({
+        where: { id: +id },
+        data: { deleted_at: new Date(), is_active: false },
+      });
+
+      return resolve();
+    }
+  )
+);

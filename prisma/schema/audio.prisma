@@ -1,0 +1,12 @@
+model audio {
+  id           Int       @id @default(autoincrement())
+  file_path    String    // Path to audio file (e.g., public/audios/song.mp3)
+  format       String?   // e.g., mp3, wav
+  file_size    Int?      // Size in bytes
+  duration     Float?    // Duration in seconds
+  created_at   DateTime  @default(now())
+  updated_at   DateTime? @updatedAt
+
+  song_id Int? @unique
+  song songs? @relation(fields: [song_id], references: [id])
+}

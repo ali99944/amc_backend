@@ -17,7 +17,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use('/public', express.static(path.join(__dirname, './public')))
+app.use('/storage', express.static(path.join(__dirname, './public')))
 
 app.use(compression())
 app.use(cookieParser())
@@ -51,7 +51,7 @@ const main = async () => {
             (await import('./routes/language_route.js')).default,
         )
 
-        app.get('*', (req ,res) => {
+        app.get('*', (req ,res) => {            
             return res.status(NOT_FOUND_STATUS).json({
                 error: '404 Not Found',
                 url: req.url

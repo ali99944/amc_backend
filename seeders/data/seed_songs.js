@@ -4,10 +4,9 @@ import { PrismaClient } from "@prisma/client";
  * Seeds songs into the database.
  * @param {PrismaClient} prisma - Prisma client instance
  * @param {Array} artists - Array of created artists
- * @param {Array} albums - Array of created albums
  * @returns {Promise<void>}
  */
-export async function seedSongs(prisma, artists, albums) {
+export async function seedSongs(prisma, artists) {
     const songs = await prisma.songs.createMany({
       data: [
         {
