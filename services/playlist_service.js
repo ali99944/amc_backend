@@ -30,21 +30,14 @@ export const getAllPlaylists = async () => new Promise(
     )
 );
 
-export const createPlaylist = async ({ name, description, image, user_id, song_ids }) => new Promise(
+export const createPlaylist = async ({ name, description, image, song_ids }) => new Promise(
     promiseAsyncWrapper(
         async (resolve) => {
-            // Verify user exists
-            const user = await prisma.users.findUnique({ where: { id: user_id } });
-            if (!user) {
-                throw new ApiError("User not found", BAD_REQUEST_CODE, BAD_REQUEST_STATUS);
-            }
-
             const playlist = await prisma.playlists.create({
                 data: {
                     name,
                     description,
                     image,
-                    user_id,
                     is_active: true,
                     songs: song_ids.length > 0 ? {
                         create: song_ids.map(id => ({
@@ -63,7 +56,6 @@ export const createPlaylist = async ({ name, description, image, user_id, song_i
                 name: playlist.name,
                 description: playlist.description,
                 image: playlist.image,
-                user_id: playlist.user_id,
                 songs_count: playlist.songs.length,
                 is_active: playlist.is_active,
                 created_at: playlist.created_at.toISOString(),
@@ -89,7 +81,7 @@ export const deletePlaylist = async (id) => new Promise(
             // Delete playlist (cascades to playlist_song)
             const deletedPlaylist = await prisma.playlists.delete({
                 where: { id: +id },
-                include: { songs: true, user: true },
+                include: { songs: true },
             });
 
             // Map to interface
@@ -98,7 +90,6 @@ export const deletePlaylist = async (id) => new Promise(
                 name: deletedPlaylist.name,
                 description: deletedPlaylist.description,
                 image: deletedPlaylist.image,
-                user_id: deletedPlaylist.user_id,
                 songs_count: deletedPlaylist.songs.length,
                 is_active: deletedPlaylist.is_active,
                 created_at: deletedPlaylist.created_at.toISOString(),

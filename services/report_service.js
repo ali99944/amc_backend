@@ -8,6 +8,12 @@ import fs from 'fs/promises';
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import { BAD_REQUEST_CODE, NOT_FOUND_CODE } from '../lib/error_codes.js';
+import { fileURLToPath } from "url";
+import { extractReportData } from '../lib/report_data_extractor.js';
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+
 
 export const getReports = () => new Promise(
   promiseAsyncWrapper(async (resolve) => {
@@ -24,52 +30,17 @@ export const getReports = () => new Promise(
 
 export const createReport = (reportData) => new Promise(
   promiseAsyncWrapper(async (resolve) => {
-    const { report_name, description, report_type } = reportData;
+    const { report_name, description, report_type, start_date, end_date } = reportData;
     if (!report_name || !report_type) {
       throw new ApiError('Report name and type are required', BAD_REQUEST_CODE, BAD_REQUEST_STATUS);
     }
 
-    // Mock data for report content (replace with actual data fetching logic)
-    let data;
-    switch (report_type) {
-      case 'user_analytics':
-        data = {
-          title: report_name,
-          description: description || 'تقرير تحليلات المستخدمين',
-          users: [
-            { id: 1, name: 'محمد أحمد', registrations: 150, active: 120 },
-            { id: 2, name: 'سارة خالد', registrations: 200, active: 180 },
-          ],
-        };
-        break;
-      case 'music_performance':
-        data = {
-          title: report_name,
-          description: description || 'تقرير أداء الموسيقى',
-          songs: [
-            { title: 'أغنية رائعة', artist: 'محمد منير', plays: 15420 },
-            { title: 'لحن الحياة', artist: 'أم كلثوم', plays: 23150 },
-          ],
-        };
-        break;
-      case 'playlist_analytics':
-        data = {
-          title: report_name,
-          description: description || 'تقرير تحليلات قوائم التشغيل',
-          playlists: [
-            { name: 'الأغاني الشعبية', followers: 500, plays: 10000 },
-            { name: 'كلاسيكيات عربية', followers: 300, plays: 7500 },
-          ],
-        };
-        break;
-      default:
-        throw new ApiError('Invalid report type', BAD_REQUEST_CODE, BAD_REQUEST_STATUS);
-    }
-
     // Read Handlebars template
-    const templatePath = path.join(__dirname, `../../templates/${report_type}.hbs`);
+    const templatePath = path.join(__dirname, `../templates/${report_type}.html`);
     const templateContent = await fs.readFile(templatePath, 'utf-8');
     const template = handlebars.compile(templateContent);
+
+    const data = await extractReportData(report_type)
 
     // Generate HTML
     const html = template(data);
@@ -78,12 +49,12 @@ export const createReport = (reportData) => new Promise(
     const browser = await puppeteer.launch({ headless: true });
     const page = await browser.newPage();
     await page.setContent(html, { waitUntil: 'networkidle0' });
-    const pdfPath = path.join(__dirname, `../../uploads/reports/report-${uuidv4()}.pdf`);
+    const pdfPath = path.join(__dirname, `../public/reports/report-${uuidv4()}.pdf`);
     await page.pdf({
       path: pdfPath,
-      format: 'A4',
+      format: 'A3',
       printBackground: true,
-      margin: { top: '20mm', right: '20mm', bottom: '20mm', left: '20mm' },
+      // margin: { top: '20mm', right: '20mm', bottom: '20mm', left: '20mm' },
     });
     await browser.close();
 
@@ -94,11 +65,13 @@ export const createReport = (reportData) => new Promise(
     // Save report to database
     const report = await prisma.reports.create({
       data: {
-        report_name,
-        description,
-        report_type,
-        report_file_size: fileSize,
-        report_url: `/uploads/reports/${path.basename(pdfPath)}`,
+        report_name: report_name,
+        report_type: report_type,
+        description: description,
+        start_date: start_date,
+        end_date: end_date,
+        generated_report_size: 0,
+        generated_report_url: `reports/${path.basename(pdfPath)}`
       },
     });
 
@@ -123,3 +96,15 @@ export const getReport = (id) => new Promise(
     });
   })
 );
+
+export const deleteReport = (id) => new Promise(
+  promiseAsyncWrapper(async (resolve, reject) => {
+    try {
+      await prisma.reports.delete({ where: { id } });
+      resolve({ message: 'Report deleted successfully' });
+    } catch (error) {
+      reject(new ApiError('Failed to delete report', BAD_REQUEST_CODE, BAD_REQUEST_STATUS));
+    }
+  })
+);
+

@@ -1,85 +1,288 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Activate Your AMC ORG Account</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
-      margin: 0;
-      padding: 0;
-    }
-    .container {
-      max-width: 600px;
-      margin: 0 auto;
-      background-color: #ffffff;
-      padding: 20px;
-      border-radius: 8px;
-      border: 1px solid #eee
-    }
-    .header {
-      text-align: center;
-      padding: 20px 0;
-    }
-    .header h1 {
-      color: #1a1a1a;
-      margin: 0;
-    }
-    .content {
-      padding: 20px;
-      text-align: center;
-    }
-    .content h2 {
-      color: #333333;
-      margin-top: 0;
-    }
-    .content p {
-      color: #666666;
-      line-height: 1.6;
-    }
-    .otp {
-      font-size: 24px;
-      font-weight: bold;
-      color: #007bff;
-      margin: 20px 0;
-      letter-spacing: 2px;
-    }
-    .button {
-      display: inline-block;
-      padding: 12px 24px;
-      background-color: #007bff;
-      color: #ffffff;
-      text-decoration: none;
-      border-radius: 4px;
-      margin: 20px 0;
-    }
-    .footer {
-      text-align: center;
-      padding: 20px;
-      color: #999999;
-      font-size: 12px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تفعيل الحساب</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #ededed;
+            color: #1f2937;
+            line-height: 1.6;
+            direction: rtl;
+            padding: 20px;
+        }
+        
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+=        }
+        
+        .header {
+            background: linear-gradient(135deg, #2d6a4f 0%, #386641 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        
+        .logo {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 24px;
+            color: #2d6a4f;
+            font-weight: bold;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px 30px;
+        }
+        
+        .greeting {
+            font-size: 18px;
+            color: #374151;
+            margin-bottom: 20px;
+        }
+        
+        .message {
+            color: #6b7280;
+            margin-bottom: 30px;
+            line-height: 1.8;
+        }
+        
+        .activation-container {
+            background: #f9fafb;
+            border: 2px solid #2d6a4f;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .activation-label {
+            color: #374151;
+            font-size: 16px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .activation-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #2d6a4f 0%, #386641 100%);
+            color: white;
+            padding: 10px 40px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .activation-button:hover {
+            background: linear-gradient(135deg, #1f4f37 0%, #2d5a3d 100%);
+
+        }
+
+        .activation-note {
+            color: #6b7280;
+            font-size: 14px;
+        }
+        
+        .instructions {
+            background: #fef3c7;
+            border-right: 4px solid #f59e0b;
+            padding: 16px;
+            margin: 30px 0;
+        }
+        
+        .instructions h3 {
+            color: #92400e;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        
+        .instructions ul {
+            color: #92400e;
+            padding-right: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+        }
+        
+        .warning {
+            background: #fee2e2;
+            border-right: 4px solid #ef4444;
+            padding: 16px;
+            margin: 30px 0;
+        }
+        
+        .warning h3 {
+            color: #dc2626;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        
+        .warning p {
+            color: #dc2626;
+            font-size: 14px;
+        }
+        
+        .footer {
+            background: #f9fafb;
+            padding: 30px;
+            text-align: center;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        .footer p {
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        .social-links {
+            margin-top: 20px;
+        }
+        
+        .social-links a {
+            display: inline-block;
+            margin: 0 10px;
+            color: #2d6a4f;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .contact-info {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        .contact-info p {
+            color: #9ca3af;
+            font-size: 12px;
+        }
+        
+        @media (max-width: 600px) {
+            .email-container {
+                margin: 10px;
+                border-radius: 8px;
+            }
+            
+            .header {
+                padding: 30px 20px;
+            }
+            
+            .content {
+                padding: 30px 20px;
+            }
+            
+            .otp-code {
+                font-size: 28px;
+                letter-spacing: 4px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <h1>AMC ORG</h1>
+    <div class="email-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">🎵</div>
+            <h1>مرحباً بك في منصتنا الموسيقية</h1>
+            <p>يرجى تفعيل حسابك للبدء في الاستمتاع بجميع الميزات</p>
+        </div>
+        
+        <!-- Content -->
+        <div class="content">
+            <div class="greeting">
+                مرحباً {{user_name}}،
+            </div>
+            
+            <div class="message">
+                شكراً لك على التسجيل في منصتنا الموسيقية! لإكمال عملية التسجيل والبدء في استخدام حسابك، 
+                يرجى تفعيل حسابك من خلال النقر على رابط التفعيل أدناه.
+            </div>
+            
+            <!-- Activation Link Container -->
+            <div class="activation-container">
+                <div class="activation-label">لتفعيل حسابك، اضغط على الزر أدناه:</div>
+                <a href="{{activation_link}}" class="activation-button">
+                    تفعيل الحساب الآن
+                </a>
+                <div class="activation-note">هذا الرابط صالح لمدة {{expiry_hours}} ساعة من وقت التسجيل</div>
+            </div>
+            
+            <!-- Instructions -->
+            <div class="instructions">
+                <h3>كيفية تفعيل حسابك:</h3>
+                <ul>
+                    <li>اضغط على زر "تفعيل الحساب الآن" أعلاه</li>
+                    <li>ستتم إعادة توجيهك إلى صفحة التفعيل</li>
+                    <li>سيتم تفعيل حسابك تلقائياً</li>
+                    <li>يمكنك بعدها تسجيل الدخول والاستمتاع بالمنصة</li>
+                </ul>
+            </div>
+            
+            <!-- Warning -->
+            <div class="warning">
+                <h3>تنبيه أمني مهم:</h3>
+                <p>
+                    لا تشارك رابط التفعيل مع أي شخص آخر. إذا لم تقم بالتسجيل في منصتنا، 
+                    يرجى تجاهل هذه الرسالة أو التواصل معنا فوراً.
+                </p>
+            </div>
+            
+            <div class="message">
+                إذا واجهت أي مشكلة في عملية التفعيل، لا تتردد في التواصل مع فريق الدعم الفني.
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <p>شكراً لاختيارك منصتنا الموسيقية</p>
+            <p>فريق الدعم الفني</p>
+            
+            <div class="social-links">
+                <a href="{{website_url}}">الموقع الإلكتروني</a>
+                <a href="{{support_url}}">الدعم الفني</a>
+                <a href="{{privacy_url}}">سياسة الخصوصية</a>
+            </div>
+            
+            <div class="contact-info">
+                <p>هذه رسالة تلقائية، يرجى عدم الرد عليها</p>
+                <p>للاستفسارات: {{support_email}} | {{support_phone}}</p>
+                <p>{{company_name}} - {{company_address}}</p>
+            </div>
+        </div>
     </div>
-    <div class="content">
-      <h2>Welcome, {{USER_NAME}}!</h2>
-      <p>Thank you for joining AMC ORG. To activate your account, please use the one-time password (OTP) below:</p>
-      <div class="otp">{{OTP}}</div>
-      <p>This OTP is valid for 15 minutes. Enter it in the app to complete your account activation.</p>
-      <a href="#" class="button">Activate Now</a>
-      <p>If you didn’t request this email, please ignore it or contact our support team.</p>
-    </div>
-    <div class="footer">
-      <p>&copy; 2025 AMC ORG. All rights reserved.</p>
-      <p>Support: support@musicapp.com</p>
-    </div>
-  </div>
 </body>
 </html>

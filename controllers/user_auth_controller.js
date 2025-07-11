@@ -210,18 +210,31 @@ export const loginUserController = asyncWrapper(
   async (req, res, next) => {
     const {
       email,
-      password
+      password,
+      device_infos
     } = req.body;
+
+    console.log(req.body);
+    
 
     // Validate inputs
     await Validator.validateNotNull({
       email,
-      password
+      password,
+      device_infos
     });
     await Validator.isEmail(email);
     // await Validator.isPassword(password);
 
-    console.log(email);
+    const {
+      device_type,
+      device_id,
+      app_version,
+      os_version,
+      platform
+    } = device_infos;
+
+    console.log(device_infos);
     
 
     const user = await prisma.users.findUnique({
@@ -261,13 +274,31 @@ export const loginUserController = asyncWrapper(
       },
     });
 
-    const token = await generateUserToken({
+
+    const session_token = await generateUserToken({
       id: user.id,
       email: user.email,
     });
 
+    
+    
+    const user_session = await prisma.user_sessions.create({
+      data: {
+        user_id: user.id,
+        session_token,
+        device_type,
+        device_id,
+        app_version,
+        os_version,
+        platform
+      },
+    });
+    
+    console.log(user_session);
+
+
     return res.status(OK_STATUS).json({
-      token,
+      session: user_session,
       user: {
         id: user.id,
         name: user.name,
@@ -288,6 +319,18 @@ export const loginUserController = asyncWrapper(
 export const logoutUserController = asyncWrapper(
   async (req, res) => {
     // Stateless JWT, client discards token
+    if (req.user) {
+      await prisma.user_sessions.updateMany({
+        where: {
+          user_id: req.user.id,
+          expired_at: null
+        },
+        data: {
+          expired_at: new Date()
+        }
+      });
+    }
+
     return res.status(OK_STATUS).json({
       message: 'Logged out successfully'
     });
@@ -329,11 +372,11 @@ export const refreshTokenController = asyncWrapper(
 );
 
 export const activateAccountController = asyncWrapper(
-  async (req, res, next) => {
+  async (req, res) => {
     const {
       email,
       otp
-    } = req.body;
+    } = req.query;
 
     // Validate inputs
     await Validator.validateNotNull({

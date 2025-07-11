@@ -28,7 +28,7 @@ export const updateTag = async (id, { name, description }) => {
 export const deleteTag = async (id) => {
     return await prisma.tags.delete({
         where: {
-            id
+            id: +id
         }
     });
 }

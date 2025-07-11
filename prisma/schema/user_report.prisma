@@ -1,0 +1,41 @@
+model user_reports {
+  id Int @id @default(autoincrement())
+
+  start_date String
+  end_date String
+
+  users_count Int
+  active_users_count Int
+  new_users_count Int
+  users_keep_rate Float
+
+
+  generated_report_pdf String?
+
+  created_at DateTime @default(now())
+
+  most_active_users most_active_users[]
+  users_distributions users_distributions[]
+}
+
+
+model most_active_users {
+  id Int @id @default(autoincrement())
+  user_name String
+  sessions_count Int
+  listen_hours_count Int
+  is_active Boolean
+
+  user_report_id Int
+  user_report user_reports @relation(fields: [user_report_id], references: [id])
+}
+
+model users_distributions {
+    id Int @id @default(autoincrement())
+    age_range String
+    users_count Int
+    percentage Float
+
+    user_report_id Int
+    user_report user_reports @relation(fields: [user_report_id], references: [id])
+}

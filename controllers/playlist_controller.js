@@ -1,7 +1,4 @@
-// playlist_controller.js
-import { ApiError } from "../lib/api_error.js";
-import { BAD_REQUEST_CODE } from "../lib/error_codes.js";
-import { BAD_REQUEST_STATUS, OK_STATUS } from "../lib/status_codes.js";
+import { OK_STATUS } from "../lib/status_codes.js";
 import Validator from "../lib/validator.js";
 import asyncWrapper from "../lib/wrappers/async_wrapper.js";
 import { createPlaylist, deletePlaylist, getAllPlaylists, updatePlaylist } from "../services/playlist_service.js";
@@ -15,13 +12,12 @@ export const getAllPlaylistsController = asyncWrapper(
 
 export const createPlaylistController = asyncWrapper(
     async (req, res, next) => {
-        const { name, description, user_id, song_ids } = req.body;
+        const { name, description, song_ids } = req.body;
         const image_file = req.file;
 
         // Validate inputs
-        await Validator.validateNotNull({ name, user_id });
+        await Validator.validateNotNull({ name });
         await Validator.isText(name, { minLength: 2, maxLength: 100 });
-        await Validator.isNumber(user_id, { integer: true, min: 1 });
         if (description) {
             await Validator.isText(description, { minLength: 0, maxLength: 500 });
         }
@@ -44,7 +40,6 @@ export const createPlaylistController = asyncWrapper(
             name,
             description: description || null,
             image: image_file ? 'images/playlists/' + image_file.filename : null,
-            user_id: +user_id,
             song_ids: song_ids ? JSON.parse(song_ids) : [],
         });
 

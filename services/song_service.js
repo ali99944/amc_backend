@@ -2,6 +2,9 @@
 import prisma from "../lib/prisma.js";
 import promiseAsyncWrapper from "../lib/wrappers/promise_async_wrapper.js";
 import { getAudioDuration } from "../lib/audio.js";
+import { generateTrackNumber } from "../lib/random.js";
+import { SongDTO } from "../mappers/song.dto.js";
+import { ApiError } from "../lib/api_error.js";
 
 export const getAllSongs = async () => new Promise(
     promiseAsyncWrapper(
@@ -10,21 +13,12 @@ export const getAllSongs = async () => new Promise(
                 include: {
                     genre: true,
                     artist: true,
-                    audio: true
+                    original_audio: true
                 },
             });
 
             // Map to interface
-            const mappedSongs = songs.map(song => ({
-                id: song.id,
-                title: song.title,
-                image: song.image,
-                release_date: song.release_date,
-                artist: song.artist,
-                genre: song.genre,
-                is_active: song.is_active,
-                created_at: song.created_at.toISOString(),
-            }));
+            const mappedSongs = songs.map(song => new SongDTO(song));
 
             return resolve(mappedSongs);
         }
@@ -37,51 +31,36 @@ export const createSong = async ({ title, artist_id, audio_path, image, genre_id
             // Get audio duration
             const duration = await getAudioDuration('public/' + audio_path);
 
-            // Create audio record
-            const audio = await prisma.audio.create({
-                data: {
-                    file_path: audio_path,
-                    format: audio_path.split('.').pop(), // e.g., mp3
-                    file_size: (await import('fs')).statSync('public/' + audio_path).size,
-                    duration,
-
-                    song_id
-                },
-            });
-
             // Create song
             const song = await prisma.songs.create({
                 data: {
                     title,
                     image,
                     artist_id,
-                    audio_id: audio.id,
                     is_active: true,
+                    track_number: generateTrackNumber(),
                     release_date,
-                    genre_id
+                    genre_id,
+
+                    original_audio: {
+                        create: {
+                            file_path: audio_path,
+                            format: audio_path.split('.').pop(), // e.g., mp3
+                            file_size: (await import('fs')).statSync('public/' + audio_path).size,
+                            duration
+                        }
+                    }
                 },
                 include: {
                     genre: true,
-                    audio: true,
+                    original_audio: true,
                     artist: true,
                 },
             });
 
 
 
-            // Map to interface
-            const mappedSong = {
-                id: song.id,
-                title: song.title,
-                image: song.image,
-                duration: song.audio.duration || 0,
-                artist_id: song.artist_id,
-                genres_count: song.genres.length,
-                is_active: song.is_active,
-                created_at: song.created_at.toISOString(),
-            };
-
-            return resolve(mappedSong);
+            return resolve(new SongDTO(song));
         }
     )
 );
@@ -90,8 +69,9 @@ export const deleteSong = async (id) => new Promise(
     promiseAsyncWrapper(
         async (resolve) => {
             const song = await prisma.songs.findUnique({
-                where: { id: +id },
-                include: { genres: true, audio: true },
+                where: {
+                    id: +id
+                }
             });
 
             if (!song) {
@@ -99,39 +79,13 @@ export const deleteSong = async (id) => new Promise(
             }
 
             // Delete song (cascades to song_genre)
-            const deletedSong = await prisma.songs.delete({
-                where: { id: +id },
-                include: { genres: true, audio: true, artist: true },
+            await prisma.songs.delete({
+                where: {
+                    id: +id
+                }
             });
 
-            // Update artist's total_songs
-            await prisma.artists.update({
-                where: { id: deletedSong.artist_id },
-                data: { total_songs: { decrement: 1 } },
-            });
-
-            // Update genres' total_songs
-            const genreIds = deletedSong.genres.map(g => g.genre_id);
-            if (genreIds.length > 0) {
-                await prisma.genres.updateMany({
-                    where: { id: { in: genreIds } },
-                    data: { total_songs: { decrement: 1 } },
-                });
-            }
-
-            // Map to interface
-            const mappedSong = {
-                id: deletedSong.id,
-                title: deletedSong.title,
-                image: deletedSong.image,
-                duration: deletedSong.audio.duration || 0,
-                artist_id: deletedSong.artist_id,
-                genres_count: deletedSong.genres.length,
-                is_active: deletedSong.is_active,
-                created_at: deletedSong.created_at.toISOString(),
-            };
-
-            return resolve(mappedSong);
+            return resolve(true);
         }
     )
 );
@@ -139,10 +93,12 @@ export const deleteSong = async (id) => new Promise(
 export const updateSong = async ({ id, payload }) => new Promise(
     promiseAsyncWrapper(
         async (resolve) => {
-            const { title, artist_id, image, genre_id, is_active, release_date } = payload;
+            const { title, description, lyrics, artist_id, image, genre_id, is_active, release_date } = payload;
 
             const updateData = {
                 title,
+                description,
+                lyrics,
                 image,
                 is_active,
                 release_date
@@ -165,23 +121,12 @@ export const updateSong = async ({ id, payload }) => new Promise(
                 data: updateData,
                 include: {
                     genre: true,
-                    audio: true,
+                    original_audio: true,
                     artist: true,
                 },
             });
 
-            // Map to interface
-            const mappedSong = {
-                id: song.id,
-                title: song.title,
-                image: song.image,
-                duration: 0,
-                artist_id: song.artist_id,
-                is_active: song.is_active,
-                created_at: song.created_at.toISOString(),
-            };
-
-            return resolve(mappedSong);
+            return resolve(new SongDTO(song));
         }
     )
 );
@@ -196,7 +141,7 @@ export const getSongById = async (id) => new Promise(
                 where: { id: +id },
                 include: {
                     genre: true,
-                    audio: true,
+                    original_audio: true,
                     artist: true,
                 },
             });
@@ -205,20 +150,7 @@ export const getSongById = async (id) => new Promise(
                 throw new ApiError('Song not found', BAD_REQUEST_CODE, BAD_REQUEST_STATUS);
             }
 
-            // Map to interface
-            const mappedSong = {
-                id: song.id,
-                title: song.title,
-                image: song.image,
-                duration: song?.audio?.duration || 0,
-                artist: song.artist,
-                genre: song.genre,
-                // genres_count: song.genre.length,
-                is_active: song.is_active,
-                created_at: song.created_at.toISOString(),
-            };
-
-            return resolve(mappedSong);
+            return resolve(new SongDTO(song));
         }
     )
 );

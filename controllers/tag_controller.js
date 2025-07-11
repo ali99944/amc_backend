@@ -35,7 +35,7 @@ export const updateTagController = asyncWrapper(
 export const deleteTagController = asyncWrapper(
   async (req, res) => {
     const { id } = req.params;
-    await Validator.isNumber(id, { integer: true, min: 1 });
+    // await Validator.isNumber(id, { integer: true, min: 1 });
     await deleteTag(id);
     return res.status(OK_STATUS).json({ message: 'Tag deleted successfully' });
   }

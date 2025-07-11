@@ -4,6 +4,7 @@ model audio {
   format       String?   // e.g., mp3, wav
   file_size    Int?      // Size in bytes
   duration     Float?    // Duration in seconds
+  bitrate      Float?    @default(128) // Bitrate in kbps
   created_at   DateTime  @default(now())
   updated_at   DateTime? @updatedAt
 

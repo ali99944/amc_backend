@@ -1,5 +1,5 @@
 model tags {
-    id          String  @id @default(cuid())
+    id          Int @id @default(autoincrement())
     name        String
     description String?
 
@@ -13,10 +13,10 @@ model tags {
 model song_tags {
     id        Int     @id @default(autoincrement())
     song_id   Int
-    tag_id    String
+    tag_id    Int
 
-    song      songs   @relation(fields: [song_id], references: [id])
-    tag       tags    @relation(fields: [tag_id], references: [id])
+    song      songs   @relation(fields: [song_id], references: [id], onDelete: Cascade)
+    tag       tags    @relation(fields: [tag_id], references: [id], onDelete: Cascade)
 
     @@unique([song_id, tag_id])
 }

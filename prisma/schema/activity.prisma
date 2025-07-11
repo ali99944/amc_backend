@@ -1,0 +1,22 @@
+enum ActivityCategory {
+    reports
+    users
+    songs
+}
+
+enum ActivityType {
+    info
+    success
+    failure
+    warning
+}
+
+model activities {
+    id Int @id @default(autoincrement())
+
+    category ActivityCategory
+    type ActivityType
+
+    name String
+    done_at String
+}

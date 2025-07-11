@@ -37,6 +37,8 @@ model songs {
 
 
   audio_versions audio_versions[]
+
+  user_listen_history user_listen_history[]
 }
 
 model song_plays {

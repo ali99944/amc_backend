@@ -1,0 +1,8 @@
+model manager_permissions {
+    id Int @id @default(autoincrement())
+
+    name String
+
+    manager_id Int
+    manager managers @relation(fields: [manager_id], references: [id] ,onDelete: Cascade)
+}

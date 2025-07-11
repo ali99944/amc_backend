@@ -9,7 +9,11 @@ import { BAD_REQUEST_CODE } from "../lib/error_codes.js";
 export const getAllManagers = async () => new Promise(
   promiseAsyncWrapper(
     async (resolve) => {
-      const managers = await prisma.managers.findMany();
+      const managers = await prisma.managers.findMany({
+        include: {
+          manager_permissions: true
+        }
+      });
 
       // Map to interface
       const mappedManagers = managers.map(manager => ({
@@ -20,7 +24,9 @@ export const getAllManagers = async () => new Promise(
         is_active: manager.is_active,
         created_at: manager.created_at,
         updated_at: manager.updated_at,
-        last_login: (new Date()).toISOString
+        last_login: (new Date()).toISOString,
+
+        manager_permissions: manager.manager_permissions
       }));
 
       return resolve(mappedManagers);

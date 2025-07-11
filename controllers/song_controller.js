@@ -20,10 +20,6 @@ export const createSongController = asyncWrapper(
         const audio_file = req.files?.audio?.[0];
         const image_file = req.files?.image?.[0];
 
-        console.log(audio_file);
-        console.log(image_file);
-        
-
         
 
         // Validate inputs
@@ -32,28 +28,27 @@ export const createSongController = asyncWrapper(
             return next(audio_missing_error);
         }
 
-        await Validator.validateNotNull({ title, artist_id });
+        await Validator.validateNotNull({ title });
         await Validator.isText(title, { minLength: 2, maxLength: 100 });
-        await Validator.isNumber(artist_id, { integer: true, min: 1 });
 
-        await Validator.validateFile(audio_file, {
-            allowedTypes: ['audio/mpeg', 'audio/wav'],
-            maxSize: 20 * 1024 * 1024, // 20MB
-            fieldName: 'audio',
-        });
-        if (image_file) {
-            await Validator.validateFile(image_file, {
-                allowedTypes: ['image/jpeg', 'image/png'],
-                maxSize: 5 * 1024 * 1024, // 5MB
-                fieldName: 'image',
-            });
-        }
+        // await Validator.validateFile(audio_file, {
+        //     allowedTypes: ['audio/mpeg', 'audio/wav'],
+        //     maxSize: 20 * 1024 * 1024, // 20MB
+        //     fieldName: 'audio',
+        // });
+        // if (image_file) {
+        //     await Validator.validateFile(image_file, {
+        //         allowedTypes: ['image/jpeg', 'image/png'],
+        //         maxSize: 5 * 1024 * 1024, // 5MB
+        //         fieldName: 'image',
+        //     });
+        // }
 
         const song = await createSong({
             title,
             artist_id: +artist_id,
-            audio_path: 'audios/' + audio_file.filename,
-            image: image_file ? 'images/songs/' + image_file.filename : null,
+            audio_path: 'songs/assets/' + audio_file.filename,
+            image: image_file ? 'songs/assets/' + image_file.filename : null,
             genre_id: +genre_id,
             track_number: generateTrackNumber(),
             release_date
@@ -75,14 +70,17 @@ export const deleteSongController = asyncWrapper(
 export const updateSongController = asyncWrapper(
     async (req, res) => {
         const { id } = req.params;
-        const { title, artist_id, genre_id, is_active, release_date } = req.body;
+        const { title, description, lyrics, artist_id, genre_id, is_active, release_date } = req.body;
         const audio_file = req.files?.audio?.[0];
         const image_file = req.files?.image?.[0];
 
         // Validate inputs
-        await Validator.isNumber(id, { integer: true, min: 1 });
-        await Validator.validateNotNull({ title });
-        await Validator.isText(title, { minLength: 2, maxLength: 100 });
+        await Validator.isNumber(+id, { integer: true, min: 1 });
+
+        if(title){
+            await Validator.isText(title, { minLength: 2, maxLength: 100 });
+        }
+
         if (artist_id) {
             await Validator.isNumber(artist_id, { integer: true, min: 1 });
         }
@@ -109,6 +107,8 @@ export const updateSongController = asyncWrapper(
             id,
             payload: {
                 title,
+                description,
+                lyrics,
                 artist_id: artist_id ? +artist_id : undefined,
                 audio_path: audio_file ? 'audios/' + audio_file.filename : undefined,
                 image: image_file ? 'images/songs/' + image_file.filename : undefined,

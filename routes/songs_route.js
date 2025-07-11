@@ -6,7 +6,7 @@ import { createMulterStorage } from '../services/multer_storage.js';
 const router = express.Router();
 
 // Configure multer for both audio and image uploads
-const upload = createMulterStorage('public', 'audios').fields([
+const upload = createMulterStorage('songs', 'assets').fields([
   { name: 'audio', maxCount: 1 },
   { name: 'image', maxCount: 1 },
 ]);

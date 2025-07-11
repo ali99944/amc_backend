@@ -1,0 +1,18 @@
+model user_sessions {
+    id Int @id @default(autoincrement())
+    user_id Int
+    user users @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+    session_token String @unique
+    device_type String
+    device_id String
+    app_version String
+    os_version String
+    platform String
+
+    started_at DateTime @default(now())
+    expired_at DateTime?
+
+    created_at DateTime @default(now())
+    updated_at DateTime @default(now()) @updatedAt
+}

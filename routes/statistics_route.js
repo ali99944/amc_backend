@@ -8,4 +8,7 @@ const router = express.Router();
 // Manager-only route
 router.get('/statistics/overview', verifyManagerToken, getOverviewStatisticsController);
 
+router.get('/statistics/engagement', verifyManagerToken, );
+router.get('/statistics/content', verifyManagerToken, );
+
 export default router;

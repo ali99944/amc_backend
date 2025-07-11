@@ -35,6 +35,10 @@ model users {
   UserPlayHistory UserPlayHistory[]
 
   recommendations recommendations[]
+
+  user_listen_history user_listen_history[]
+
+  user_sessions user_sessions[]
 }
 
 

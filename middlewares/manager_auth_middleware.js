@@ -21,12 +21,13 @@ export const verifyManagerToken = asyncWrapper(
 
 export const restrictTo = (...requiredPermissions) => asyncWrapper(
   async (req, res, next) => {
-    const managerRole = req.manager.role;
-    const allowedPermissions = ROLE_PERMISSIONS[managerRole] || [];
+    const managerPermissions = req.manager.manager_permissions || [];
 
-    const hasPermission = requiredPermissions.every(perm => allowedPermissions.includes(perm));
+    const isSuperAdmin = req.manager.role == 'super_admin';
+    
+    const hasPermission = isSuperAdmin || requiredPermissions.every(perm => managerPermissions.some(p => p.name === perm));
     if (!hasPermission) {
-      throw new ApiError('Insufficient permissions', FORBIDDEN_STATUS, BAD_REQUEST_CODE);
+      return next(new ApiError('Insufficient permissions', BAD_REQUEST_CODE, NOT_AUTHORIZED_STATUS));
     }
 
     next();

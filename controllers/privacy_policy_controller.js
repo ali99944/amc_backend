@@ -36,7 +36,7 @@ export const updatePrivacyPolicyController = asyncWrapper(
 
     const updatedPrivacyPolicy = await prisma.privacy_policy.update({
       where: {
-        id: "1",
+        id: 1,
       },
       data: {
         title,

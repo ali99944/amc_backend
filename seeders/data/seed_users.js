@@ -1,11 +1,7 @@
 import argon2 from 'argon2';
+import prisma from '../../lib/prisma.js';
 
-/**
- * Seeds users and their settings into the database.
- * @param {PrismaClient} prisma - Prisma client instance
- * @returns {Promise<void>}
- */
-export async function seedUsers(prisma) {
+export async function seedUsers() {
   const usersData = [
     {
       name: 'Emma Watson',
@@ -60,6 +56,18 @@ export async function seedUsers(prisma) {
       password: await argon2.hash('Password123!'),
       gender: 'other',
       birth_date: new Date('1994-06-07'),
+      profile_picture: 'https://img.freepik.com/free-photo/portrait-young-person-smiling_23-2149084951.jpg',
+      is_active: true,
+      is_banned: true,
+      joined_at: new Date('2025-05-20T12:00:00Z'),
+      last_login_time: new Date('2025-05-21T13:00:00Z'),
+    },
+    {
+      name: 'Developer',
+      email: 'dev@amc.com',
+      password: await argon2.hash('dev'),
+      gender: 'male',
+      birth_date: new Date('2000-09-23'),
       profile_picture: 'https://img.freepik.com/free-photo/portrait-young-person-smiling_23-2149084951.jpg',
       is_active: true,
       is_banned: true,

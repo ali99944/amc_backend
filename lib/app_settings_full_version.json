@@ -1,0 +1,38 @@
+{
+  "app": {
+    "name": "Ali Media Center",
+    "support_email": "support@amc.com",
+    "logo": "http://10.0.2.2:4001/public/logo.png",
+    "description": "A premier Arabic music platform.",
+    "version": "1.0.0",
+    "copyright": "Copyright 2023 Ali Media Center. All rights reserved.",
+    "maintenance_mode": false
+  },
+
+  "users": {
+    "max_playlist_size": 546,
+    "max_playlists_per_user": 1000
+  },
+
+  "security": {
+    "max_login_attempts": 5,
+    "session_timeout_hours": 24,
+    "allow_explicit_content": false,
+    "require_email_verification": true,
+    "enable_explicit_content": false
+  },
+
+  "theme": {
+    "colors": {
+        "primary_color": "#2d6a4f",
+        "secondary_color": "#000000",
+        "accent_color": "#10b981",
+        "background_color": "#ededed",
+
+        "container_color": "#ffffff",
+        
+        "destructive": "#cd4227",
+        "destructive_foreground": "#ffffff"
+    }
+  }
+}

@@ -14,7 +14,7 @@ router.post('/managers/refresh', refreshTokenController);
 
 // Manager CRUD routes (protected)
 // router.get('/managers', verifyManagerToken, getAllManagersController);
-router.get('/managers', getAllManagersController);
+router.get('/managers', verifyManagerToken, restrictTo(PERMISSIONS.MANAGER.READ), getAllManagersController);
 router.post('/managers', verifyManagerToken, restrictTo(PERMISSIONS.MANAGER.CREATE), createManagerController);
 router.put('/managers/:id', verifyManagerToken, restrictTo(PERMISSIONS.MANAGER.UPDATE), updateManagerController);
 router.delete('/managers/:id', verifyManagerToken, restrictTo(PERMISSIONS.MANAGER.DELETE), deleteManagerController);

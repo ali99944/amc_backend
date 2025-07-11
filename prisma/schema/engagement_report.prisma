@@ -1,0 +1,27 @@
+model engagement_reports {
+  id Int @id @default(autoincrement())
+
+  start_date String
+  end_date String
+
+  total_plays Int
+  total_listen_hours Int
+  average_user_session Float
+  engagement_rate Float
+
+  most_played_songs engagement_most_played_songs[]
+  generated_report_pdf String?
+
+  created_at DateTime @default(now())
+}
+
+model engagement_most_played_songs {
+  id Int @id @default(autoincrement())
+  song_name String
+  artist_name String
+  total_plays Int
+  total_listen_hours Int
+
+  engagement_report_id Int
+  engagement_report engagement_reports @relation(fields: [engagement_report_id], references: [id])
+}

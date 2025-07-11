@@ -1,20 +1,22 @@
 {
   "app": {
     "name": "Ali Media Center",
-    "description": "The leading Arabic music platform, providing a rich library of songs, albums, podcasts, and radio stations. Users can create playlists, follow their favorite artists, and engage with the community through comments and forums. The platform is available on the web and mobile devices, with features like offline listening, customizable playlists, and personalized recommendations. It also provides tools for artists to upload and manage their content, as well as analytics to track their performance. The platform is built with a focus on scalability, security, and ease of use, with a modern and responsive design.",
+    "support_email": "support@amc.com",
     "logo": "http://10.0.2.2:4001/public/logo.png",
+    "description": "A premier Arabic music platform.",
     "version": "1.0.0",
     "copyright": "Copyright 2023 Ali Media Center. All rights reserved.",
-    "maintenance_mode": false,
-    "support_email": "support@amc.com",
-    "enable_offline_downloads": true
+    "maintenance_mode": false
   },
-  "social": {
-    "enable_comments": true,
-    "enable_following": true
+  "users": {
+    "max_playlist_size": 546,
+    "max_playlists_per_user": 1000
   },
   "security": {
     "max_login_attempts": 5,
-    "data_retention_days": 365
+    "session_timeout_hours": 24,
+    "allow_explicit_content": false,
+    "require_email_verification": true,
+    "enable_explicit_content": false
   }
 }

@@ -49,6 +49,7 @@ const main = async () => {
             (await import('./routes/contact_messages_route.js')).default,
             (await import('./routes/tag_route.js')).default,
             (await import('./routes/language_route.js')).default,
+            (await import('./routes/permissions_route.js')).default,
         )
 
         app.get('*', (req ,res) => {            

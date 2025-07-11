@@ -4,8 +4,7 @@ import {  deleteUserController, deleteUserWithRelatedDataController, getAllUsers
 import { activateAccountController, changePasswordController, forgotPasswordController, loginUserController, logoutUserController, refreshTokenController, registerUserController, resetPasswordController, verifyOtpController } from '../controllers/user_auth_controller.js';
 import { verifyUserTokenMiddleware } from '../middlewares/user_auth_middleware.js';
 import { createMulterStorage } from '../services/multer_storage.js';
-import { verifyManagerToken, restrictTo } from '../middlewares/manager_auth_middleware.js';
-import { PERMISSIONS } from '../lib/permissions.js';
+import { verifyManagerToken } from '../middlewares/manager_auth_middleware.js';
 
 const router = express.Router();
 

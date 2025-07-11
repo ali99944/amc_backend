@@ -1,15 +1,45 @@
-enum ReportType {
-  user_analytics
-  music_performance
-  playlist_analytics
-}
+// model content_reports {
+//   id Int @id @default(autoincrement())
+
+//   start_date String
+//   end_date String
+
+//   songs_count Int
+//   artists_count Int
+//   playlists_count Int
+
+//   generated_report_pdf String?
+
+//   created_at DateTime @default(now())
+//   content_most_populars content_most_populars[]
+// }
+
+// model content_most_populars {
+//   id Int @id @default(autoincrement())
+//   song_name String
+//   artist_name String
+//   genre_name String
+
+//   plays_count Int
+//   listen_hours_count Int
+//   rating Float @default(0.0)
+
+//   content_report_id Int
+//   content_report content_reports @relation(fields: [content_report_id], references: [id])
+// }
 
 model reports {
-  id              Int         @id @default(autoincrement())
-  report_name     String
-  description     String?
-  report_type     ReportType
-  created_at      DateTime    @default(now())
-  report_file_size Int
-  report_url      String
+  id Int @id @default(autoincrement())
+
+  report_name String
+  report_type String
+  description String
+
+  start_date String
+  end_date String
+
+  generated_report_url String?
+  generated_report_size Float
+
+  created_at DateTime @default(now())
 }

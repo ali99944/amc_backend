@@ -36,7 +36,7 @@ export const updateTermsConditionsController = asyncWrapper(
 
     const updatedTermsConditions = await prisma.terms_conditions.update({
       where: {
-        id: "1",
+        id: 1,
       },
       data: {
         title,

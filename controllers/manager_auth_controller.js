@@ -15,7 +15,12 @@ export const loginManagerController = asyncWrapper(
     await Validator.validateNotNull({ username, password });
     // await Validator.isPassword(password);
 
-    const manager = await prisma.managers.findUnique({ where: { username } });
+    const manager = await prisma.managers.findUnique({
+      where: { username },
+      include: {
+        manager_permissions: true
+      }
+    });
     if (!manager) {
       throw new ApiError("Invalid username or password", BAD_REQUEST_CODE, NOT_AUTHORIZED_STATUS);
     }
@@ -33,6 +38,7 @@ export const loginManagerController = asyncWrapper(
       id: manager.id,
       username: manager.username,
       role: manager.role,
+      manager_permissions: manager.manager_permissions
     });
 
     return res.status(OK_STATUS).json({
@@ -43,6 +49,7 @@ export const loginManagerController = asyncWrapper(
         name: manager.name,
         role: manager.role,
         is_active: manager.is_active,
+        manager_permissions: manager.manager_permissions,
         created_at: manager.created_at.toISOString(),
       },
     });
