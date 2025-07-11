@@ -16,8 +16,7 @@ export const getUserPlaylists = async (user_id) => new Promise(
               song: {
                 include: {
                   artist: true,
-                  album: true,
-                  audio: true,
+                  original_audio: true,
                   genre: true,
 
                 }
@@ -38,7 +37,6 @@ export const getUserPlaylists = async (user_id) => new Promise(
         songs: playlist.songs
       }));
 
-      console.log(playlists[0].songs);
       
 
       return resolve(mappedPlaylists);
@@ -75,8 +73,7 @@ export const createUserPlaylist = async ({ name, description, image, user_id, so
               song: {
                 include: {
                   artist: true,
-                  album: true,
-                  audio: true,
+                  original_audio: true,
                   genre: true,
 
                 }

@@ -14,11 +14,10 @@ export const getAllManagersController = asyncWrapper(
 
 export const createManagerController = asyncWrapper(
   async (req, res, next) => {
-    const { email, password, name, role } = req.body;
+    const { username, password, name, role } = req.body;
 
     // Validate inputs
-    await Validator.validateNotNull({ email, password, name });
-    await Validator.isEmail(email);
+    await Validator.validateNotNull({ username, password, name });
     await Validator.isText(name, { minLength: 2, maxLength: 100 });
     await Validator.isPassword(password);
     if (role) {
@@ -26,7 +25,7 @@ export const createManagerController = asyncWrapper(
     }
 
     const manager = await createManager({
-      email,
+      username,
       password,
       name,
       role: role || ROLES.STAFF, // Default to staff

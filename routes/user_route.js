@@ -29,4 +29,5 @@ router.put('/users/:id/ban', verifyManagerToken, updateUserController);
 router.get('/users', verifyManagerToken, getAllUsersController);
 router.delete('/users/:id', verifyManagerToken, deleteUserWithRelatedDataController);
 
+
 export default router;

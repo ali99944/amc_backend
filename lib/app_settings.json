@@ -2,7 +2,7 @@
   "app": {
     "name": "Ali Media Center",
     "support_email": "support@amc.com",
-    "logo": "http://10.0.2.2:4001/public/logo.png",
+    "logo": "http://10.0.2.2:4001/storage/logo.png",
     "description": "A premier Arabic music platform.",
     "version": "1.0.0",
     "copyright": "Copyright 2023 Ali Media Center. All rights reserved.",

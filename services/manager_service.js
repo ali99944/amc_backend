@@ -34,20 +34,20 @@ export const getAllManagers = async () => new Promise(
   )
 );
 
-export const createManager = async ({ email, password, name, role }) => new Promise(
+export const createManager = async ({ username, password, name, role }) => new Promise(
   promiseAsyncWrapper(
     async (resolve) => {
-      // Check if email is unique
-      const existingManager = await prisma.managers.findUnique({ where: { email } });
+      // Check if username is unique
+      const existingManager = await prisma.managers.findUnique({ where: { username } });
       if (existingManager) {
-        throw new ApiError("Email already exists", BAD_REQUEST_CODE, BAD_REQUEST_STATUS);
+        throw new ApiError("Username already exists", BAD_REQUEST_CODE, BAD_REQUEST_STATUS);
       }
 
       const hashedPassword = await hashPassword(password);
 
       const manager = await prisma.managers.create({
         data: {
-          email,
+          username,
           password: hashedPassword,
           name,
           role,
@@ -58,7 +58,7 @@ export const createManager = async ({ email, password, name, role }) => new Prom
       // Map to interface
       const mappedManager = {
         id: manager.id,
-        email: manager.email,
+        username: manager.username,
         name: manager.name,
         role: manager.role,
         is_active: manager.is_active,

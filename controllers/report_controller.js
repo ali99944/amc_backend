@@ -10,10 +10,15 @@ export const getReportsController = asyncWrapper(async (req, res) => {
 
 export const createReportController = asyncWrapper(async (req, res) => {
   const { report_type, report_name, description, start_date, end_date } = req.body;
+  console.log(req.body);
+  
   
   await Validator.validateNotNull({
-    report_type, report_name, description, start_date, end_date
+    report_type, report_name, start_date, end_date
   })
+
+  console.log('am hereeee');
+  
 
   const report = await createReport({ report_type, report_name, description, start_date, end_date });
   return res.status(CREATED_STATUS).json(report);
