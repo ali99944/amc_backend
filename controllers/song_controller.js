@@ -5,11 +5,13 @@ import { generateTrackNumber } from "../lib/random.js";
 import { BAD_REQUEST_STATUS, OK_STATUS } from "../lib/status_codes.js";
 import Validator from "../lib/validator.js";
 import asyncWrapper from "../lib/wrappers/async_wrapper.js";
-import { createSong, deleteSong, getAllSongs, getSongById, updateSong } from "../services/song_service.js";
+import { createSong, deleteSong, getAllSongs, getSongById, searchSongs, updateSong } from "../services/song_service.js";
 
 export const getAllSongsController = asyncWrapper(
     async (_, res) => {
         const songs = await getAllSongs();
+        console.log(songs);
+        
         return res.status(OK_STATUS).json(songs);
     }
 );
@@ -128,5 +130,13 @@ export const getSongByIdController = asyncWrapper(
         await Validator.isNumber(id, { integer: true, min: 1 });
         const song = await getSongById(id);
         return res.status(OK_STATUS).json(song);
+    }
+);
+
+export const searchSongsController = asyncWrapper(
+    async (req, res) => {
+        const { q } = req.query;
+        const songs = await searchSongs(q);
+        return res.status(OK_STATUS).json(songs);
     }
 );

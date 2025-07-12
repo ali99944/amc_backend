@@ -162,3 +162,85 @@ export const updateArtist = async ({ id, payload }) => new Promise(
         }
     )
 );
+
+export const getArtistProfile = async (id) => new Promise(
+    promiseAsyncWrapper(
+        async (resolve) => {
+            const artist = await prisma.artists.findUnique({
+                where: { id: +id },
+                include: {
+                    genres: true,
+                    songs: {
+                        include: {
+                            original_audio: true
+                        }
+                    },
+                },
+            });
+
+            if (!artist) {
+                throw new ApiError('Artist not found', 404, 'Not Found');
+            }
+
+            // Map to interface
+            const mappedArtist = {
+                id: artist.id,
+                name: artist.name,
+                image: artist.image,
+                bio: artist.bio || '',
+                is_featured: artist.is_featured,
+                is_active: artist.is_active,
+                songs_count: artist.songs.length,
+                genres_count: artist.genres.length,
+                total_followers: artist.total_followers,
+                created_at: artist.created_at.toISOString(),
+            };
+
+            const topTracks = artist.songs.map(s => ({
+                id: s.id,
+                title: s.title,
+                image: s.image,
+                duration: s.original_audio.duration,
+                track_number: s.track_number,
+                is_active: s.is_active,
+                is_featured: s.is_featured,
+                original_audio: s.original_audio,
+                created_at: s.created_at
+            }));
+
+            const relatedArtists = await prisma.artists.findMany({
+                where: {
+                    id: { not: artist.id },
+                    genres: {
+                        some: {
+                            genre_id: { in: artist.genres.map(g => g.genre_id) },
+                        },
+                    },
+                },
+                select: {
+                    id: true,
+                    name: true,
+                    image: true,
+                    bio: true,
+                    is_featured: true
+                },
+                take: 5,
+            });
+
+            const mappedRelatedArtists = relatedArtists.map(a => ({
+                id: a.id,
+                name: a.name,
+                image: a.image,
+                bio: a.bio || '',
+                is_featured: a.is_featured,
+                total_followers: 0
+            }));
+
+            return resolve({
+                artistDetails: mappedArtist,
+                topTracks,
+                relatedArtists: mappedRelatedArtists,
+            });
+        }
+    )
+);

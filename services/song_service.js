@@ -154,3 +154,26 @@ export const getSongById = async (id) => new Promise(
         }
     )
 );
+
+export const searchSongs = async (query) => new Promise(
+    promiseAsyncWrapper(
+        async (resolve) => {
+            const songs = await prisma.songs.findMany({
+                include: {
+                    genre: true,
+                    original_audio: true,
+                    artist: true,
+                    audio_versions: true
+                },
+            });
+
+
+            const search_results = songs.filter(song => {
+                return song?.title?.includes(query.toLowerCase()) ||
+                song?.description?.includes(query.toLowerCase())
+            })
+
+            return resolve(search_results);
+        }
+    )
+);

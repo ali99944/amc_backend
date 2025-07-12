@@ -28,7 +28,7 @@ import {
   sendEmail
 } from '../lib/smtp_service.js';
 
-const generateOtp = () => Math.floor(100000 + Math.random() * 900000).toString();
+const generateOtp = () => Math.floor(100000 + Math.random() * 900000);
 
 export const registerUserController = asyncWrapper(
   async (req, res, next) => {
@@ -159,7 +159,7 @@ export const registerUserController = asyncWrapper(
     const otp = generateOtp();
     await prisma.verification_codes.create({
       data: {
-        activation_code: otp,
+        activation_code: otp.toString(),
         email,
         type: 'activation',
         expires_at: new Date(Date.now() + 15 * 60 * 1000), // 15 minutes
@@ -184,7 +184,7 @@ export const registerUserController = asyncWrapper(
     return res.status(OK_STATUS).json({
       token,
       user: {
-        id: user.id.toString(),
+        id: user.id,
         name: user.name,
         email: user.email,
         birth_date: user.birth_date.toISOString(),
@@ -196,10 +196,10 @@ export const registerUserController = asyncWrapper(
         joined_at: user.joined_at.toISOString(),
 
         genre_interests: user.genre_interests.map(gi => ({
-          genre_id: gi.genre_id.toString(),
+          genre_id: gi.genre_id,
         })),
         artist_interests: user.artist_interests.map(ai => ({
-          artist_id: ai.artist_id.toString(),
+          artist_id: ai.artist_id,
         })),
       },
     });

@@ -78,13 +78,12 @@ export const addSongsToUserPlaylistController = asyncWrapper(
     // Validate inputs
     await Validator.isNumber(id, { integer: true, min: 1 });
     await Validator.validateNotNull({ song_ids });
-    const parsedSongs = JSON.parse(song_ids || '[]');
-    await Validator.isArray(parsedSongs, { minLength: 1, maxLength: 100, arrayName: 'song_ids' });
-    for (const song_id of parsedSongs) {
+    await Validator.isArray(song_ids, { minLength: 1, maxLength: 100, arrayName: 'song_ids' });
+    for (const song_id of song_ids) {
       await Validator.isNumber(song_id, { integer: true, min: 1 });
     }
 
-    const playlist = await addSongsToUserPlaylist({ id, song_ids: parsedSongs, user_id });
+    const playlist = await addSongsToUserPlaylist({ id, song_ids: song_ids, user_id });
 
     return res.status(OK_STATUS).json(playlist);
   }

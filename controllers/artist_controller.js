@@ -5,7 +5,7 @@ import { parseBoolean } from "../lib/parser.js";
 import { BAD_REQUEST_STATUS, OK_STATUS } from "../lib/status_codes.js";
 import Validator from "../lib/validator.js";
 import asyncWrapper from "../lib/wrappers/async_wrapper.js";
-import { createArtist, deleteArtist, getAllArtists, updateArtist } from "../services/artist_service.js";
+import { createArtist, deleteArtist, getAllArtists, getArtistProfile, updateArtist } from "../services/artist_service.js";
 
 export const getAllArtistsController = asyncWrapper(
     async (_, res) => {
@@ -102,5 +102,15 @@ export const updateArtistController = asyncWrapper(
         });
 
         return res.status(OK_STATUS).json(updatedArtist);
+    }
+);
+
+
+
+export const getArtistProfileController = asyncWrapper(
+    async (req, res) => {
+        const { id } = req.params;
+        const { artistDetails, topTracks, relatedArtists } = await getArtistProfile(id);
+        return res.status(OK_STATUS).json({ details: artistDetails, top_tracks: topTracks, related_artists: relatedArtists });
     }
 );
