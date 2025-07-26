@@ -22,7 +22,6 @@ export const verifyUserTokenMiddleware = asyncWrapper(
     }
 
 
-
     const decoded = await verifyUserToken(token);
     const user = await prisma.users.findUnique({
       where: {

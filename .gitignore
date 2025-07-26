@@ -178,4 +178,7 @@ dist
 # utils/seeders/*
 
 
-public/
+public/audios
+public/images
+public/reports
+public/songs

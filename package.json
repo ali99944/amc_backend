@@ -15,9 +15,6 @@
     "nodemon": "^3.1.9",
     "prisma": "^6.5.0"
   },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
-  },
   "dependencies": {
     "@prisma/client": "^6.5.0",
     "argon2": "^0.41.1",

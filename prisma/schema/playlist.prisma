@@ -1,18 +1,41 @@
 model playlists {
-  id           Int            @id @default(autoincrement())
+  id           Int             @id @default(autoincrement())
   name         String
-  description  String?        // Optional description
-  image        String?        // Optional cover image
-  is_active    Boolean        @default(true)
-  created_at   DateTime       @default(now())
-  updated_at   DateTime?      @updatedAt
-  songs        playlist_song[] // Relation to songs
+  description  String?
+  image        String?
+  type         PlaylistType    @default(user) // enum: user, system
+  source       PlaylistSource?               // enum: curated, recommended, trending, ai, editorial
+  user_id       Int?                          // null for system playlists
+  user         users?           @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  isActive     Boolean         @default(true)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  songs        playlist_songs[]
 }
 
-model playlist_song {
+model playlist_songs {
   id          Int       @id @default(autoincrement())
-  playlist_id Int
-  playlist    playlists @relation(fields: [playlist_id], references: [id], onDelete: Cascade)
-  song_id     Int
-  song        songs     @relation(fields: [song_id], references: [id], onDelete: Cascade)
+  playlist_id  Int
+  playlist    playlists  @relation(fields: [playlist_id], references: [id], onDelete: Cascade)
+  song_id      Int
+  song        songs      @relation(fields: [song_id], references: [id], onDelete: Cascade)
+
+  created_at DateTime @default(now())
+
+  @@unique([playlist_id, song_id]) // Prevent duplicates
+}
+
+
+enum PlaylistType {
+  user
+  system
+}
+
+enum PlaylistSource {
+  curated
+  recommended
+  trending
+  ai
+  editorial
+  virtual
 }

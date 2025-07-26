@@ -23,22 +23,21 @@ model users {
   is_active       Boolean        @default(false)
   settings        user_settings?
 
-  user_playlists user_playlists[]
+  is_onboarded Boolean @default(false)
 
-  song_plays song_plays[]
 
-  favorite_songs  user_favorite_songs[]
-  favorite_artists user_favorite_artists[]
   genre_interests user_genre_interests[]
   artist_interests user_artist_interests[]
 
-  UserPlayHistory UserPlayHistory[]
-
-  recommendations recommendations[]
 
   user_listen_history user_listen_history[]
-
   user_sessions user_sessions[]
+  playlists playlists[]
+
+  user_song_likes user_song_likes[]
+  following_artists artist_followers[]
+
+  song_play_history song_play[]
 }
 
 
@@ -51,3 +50,13 @@ model verification_codes {
   expires_at      DateTime  // OTP expiration
 }
 
+model user_song_likes {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  song_id    Int
+  created_at DateTime @default(now())
+  user       users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  song       songs    @relation(fields: [song_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, song_id]) // Prevent duplicate likes
+}

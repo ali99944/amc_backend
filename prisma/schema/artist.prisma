@@ -8,11 +8,14 @@ model artists {
   created_at      DateTime  @default(now())
   updated_at      DateTime? @updatedAt
   songs           songs[]
-  total_followers Int       @default(0)
+  followers_count Int       @default(0)
 
   genres          artist_genre[]
-  user_favorite_artists user_favorite_artists[]
   user_artist_interests user_artist_interests[]
+
+  albums albums[]
+
+  artist_followers artist_followers[]
 }
 
 model artist_genre {
@@ -22,4 +25,15 @@ model artist_genre {
 
   artist_id  Int
   artist     artists  @relation(fields: [artist_id], references: [id], onDelete: Cascade)
+}
+
+model artist_followers {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  artist_id  Int
+  followed_at DateTime @default(now())
+  user       users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  artist     artists  @relation(fields: [artist_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, artist_id]) // Prevent duplicate follows
 }

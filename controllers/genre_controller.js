@@ -4,7 +4,7 @@ import { parseBoolean } from "../lib/parser.js";
 import { BAD_REQUEST_STATUS, OK_STATUS } from "../lib/status_codes.js";
 import Validator from "../lib/validator.js";
 import asyncWrapper from "../lib/wrappers/async_wrapper.js";
-import { createGenre, deleteGenre, getAllGenres, updateGenre } from "../services/genre_service.js";
+import { createGenre, deleteGenre, getAllGenres, getGenreArtists, getGenreNewReleases, getGenrePlaylists, updateGenre } from "../services/genre_service.js";
 
 export const getAllGenresController = asyncWrapper(
     async (_, res) => {
@@ -87,5 +87,33 @@ export const updateGenreController = asyncWrapper(
         });
 
         return res.status(OK_STATUS).json(updatedGenre);
+    }
+);
+
+
+export const getGenreArtistsController = asyncWrapper(
+    async (req, res) => {
+        const { id } = req.params;
+        // await Validator.isNumber(id, { integer: true, min: 1 });
+        const artists = await getGenreArtists(id);
+        return res.status(OK_STATUS).json(artists);
+    }
+);
+
+export const getGenreNewReleasesController = asyncWrapper(
+    async (req, res) => {
+        const { id } = req.params;
+        // await Validator.isNumber(id, { integer: true, min: 1 });
+        const newReleases = await getGenreNewReleases(id);
+        return res.status(OK_STATUS).json(newReleases);
+    }
+);
+
+export const getGenrePlaylistsController = asyncWrapper(
+    async (req, res) => {
+        const { id } = req.params;
+        // await Validator.isNumber(id, { integer: true, min: 1 });
+        const playlists = await getGenrePlaylists(id);
+        return res.status(OK_STATUS).json(playlists);
     }
 );

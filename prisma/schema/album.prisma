@@ -1,0 +1,46 @@
+model albums {
+  id             Int      @id @default(autoincrement())
+  name           String
+  description    String?   @db.Text
+  image          String?
+  artist_id      Int?
+  artist         artists?   @relation(fields: [artist_id], references: [id])
+  songs_count     Int      @default(0)
+  genres_count   Int      @default(0)
+  total_duration Int?      @db.Integer
+  release_date   DateTime  @db.Date
+  is_active      Boolean   @default(true)
+  is_featured    Boolean   @default(false)
+  album_type     AlbumType @default(Album)
+  created_at     DateTime  @default(now())
+  updated_at     DateTime? @updatedAt
+
+  songs          album_songs[]
+  genres         album_genres[]
+}
+
+enum AlbumType {
+  Single
+  EP
+  Album
+  Compilation
+}
+
+
+model album_genres {
+  id        Int      @id @default(autoincrement())
+  album_id  Int      
+  album     albums   @relation(fields: [album_id], references: [id], onDelete: Cascade)
+  genre_id  Int      
+  genre     genres   @relation(fields: [genre_id], references: [id], onDelete: Cascade)
+  created_at DateTime @default(now())
+}
+
+model album_songs {
+  id        Int      @id @default(autoincrement())
+  album_id  Int      
+  album     albums   @relation(fields: [album_id], references: [id], onDelete: Cascade)
+  song_id   Int      
+  song      songs    @relation(fields: [song_id], references: [id], onDelete: Cascade)
+  created_at DateTime @default(now())
+}

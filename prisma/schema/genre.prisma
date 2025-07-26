@@ -16,4 +16,6 @@ model genres {
   user_genre_interests user_genre_interests[]
 
   songs songs[]
+
+  album_genres album_genres[]
 }

@@ -5,6 +5,8 @@ import { getAudioDuration } from "../lib/audio.js";
 import { generateTrackNumber } from "../lib/random.js";
 import { SongDTO } from "../mappers/song.dto.js";
 import { ApiError } from "../lib/api_error.js";
+import { BAD_REQUEST_CODE } from "../lib/error_codes.js";
+import { BAD_REQUEST_STATUS } from "../lib/status_codes.js";
 
 export const getAllSongs = async () => new Promise(
     promiseAsyncWrapper(
@@ -18,7 +20,7 @@ export const getAllSongs = async () => new Promise(
             });
 
             // Map to interface
-            const mappedSongs = songs.map(song => new SongDTO(song));
+            const mappedSongs = songs.map(song => SongDTO.from(song));
 
             return resolve(mappedSongs);
         }
@@ -60,7 +62,7 @@ export const createSong = async ({ title, artist_id, audio_path, image, genre_id
 
 
 
-            return resolve(new SongDTO(song));
+            return resolve(SongDTO.from(song));
         }
     )
 );
@@ -126,7 +128,7 @@ export const updateSong = async ({ id, payload }) => new Promise(
                 },
             });
 
-            return resolve(new SongDTO(song));
+            return resolve(SongDTO.from(song));
         }
     )
 );
@@ -150,7 +152,7 @@ export const getSongById = async (id) => new Promise(
                 throw new ApiError('Song not found', BAD_REQUEST_CODE, BAD_REQUEST_STATUS);
             }
 
-            return resolve(new SongDTO(song));
+            return resolve(SongDTO.from(song));
         }
     )
 );
@@ -174,6 +176,86 @@ export const searchSongs = async (query) => new Promise(
             })
 
             return resolve(search_results);
+        }
+    )
+);
+
+
+export const checkIsSongLiked = async ({ song_id, user_id }) => new Promise(
+    promiseAsyncWrapper(
+        async (resolve) => {
+            const like = await prisma.user_song_likes.findFirst({
+                where: {
+                    song_id: +song_id,
+                    user_id: +user_id
+                }
+            });            
+
+            return resolve(!!like); // Returns true if liked, false if not
+        }
+    )
+);
+
+export const likeSong = async (song_id, user_id) => new Promise(
+    promiseAsyncWrapper(
+        async (resolve) => {
+            // Check if song exists
+            const song = await prisma.songs.findUnique({
+                where: { id: +song_id }
+            });
+
+            if (!song) {
+                throw new ApiError('Song not found', BAD_REQUEST_CODE, BAD_REQUEST_STATUS);
+            }
+
+            // Check if already liked
+            const existingLike = await prisma.user_song_likes.findFirst({
+                where: {
+                    song_id: +song_id,
+                    user_id: +user_id
+                }
+            });
+
+            if (existingLike) {
+                throw new ApiError('Song already liked', BAD_REQUEST_CODE, BAD_REQUEST_STATUS);
+            }
+
+            // Create like
+            await prisma.user_song_likes.create({
+                data: {
+                    song_id: +song_id,
+                    user_id: +user_id
+                }
+            });
+
+            return resolve(true);
+        }
+    )
+);
+
+export const unlikeSong = async (song_id, user_id) => new Promise(
+    promiseAsyncWrapper(
+        async (resolve) => {
+            // Check if like exists
+            const like = await prisma.user_song_likes.findFirst({
+                where: {
+                    song_id: +song_id,
+                    user_id: +user_id
+                }
+            });
+
+            if (!like) {
+                throw new ApiError('Song not liked', BAD_REQUEST_CODE, BAD_REQUEST_STATUS);
+            }
+
+            // Delete like
+            await prisma.user_song_likes.delete({
+                where: {
+                    id: like.id
+                }
+            });
+
+            return resolve(true);
         }
     )
 );

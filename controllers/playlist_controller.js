@@ -1,107 +1,134 @@
-import { OK_STATUS } from "../lib/status_codes.js";
+// src/controllers/playlist_controller.js
+
 import Validator from "../lib/validator.js";
 import asyncWrapper from "../lib/wrappers/async_wrapper.js";
-import { createPlaylist, deletePlaylist, getAllPlaylists, updatePlaylist } from "../services/playlist_service.js";
+import { OK_STATUS, CREATED_STATUS } from "../lib/status_codes.js";
+import * as playlistService from "../services/playlist_service.js";
 
-export const getAllPlaylistsController = asyncWrapper(
-    async (_, res) => {
-        const playlists = await getAllPlaylists();
-        return res.status(OK_STATUS).json(playlists);
+export const getUserPlaylistsController = asyncWrapper(async (req, res) => {
+    const user_id = req.user.id;
+    const playlists = await playlistService.getUserPlaylists(user_id);
+    
+    res.status(OK_STATUS).json(playlists);
+});
+
+export const getSystemPlaylistsController = asyncWrapper(async (req, res) => {
+    const { source } = req.query;
+    if (source) {
+        await Validator.isEnum(source, ['curated', 'recommended', 'trending', 'ai', 'editorial']);
     }
-);
+    const playlists = await playlistService.getSystemPlaylists(source);
+    res.status(OK_STATUS).json(playlists);
+});
 
-export const createPlaylistController = asyncWrapper(
-    async (req, res, next) => {
-        const { name, description, song_ids } = req.body;
-        const image_file = req.file;
+export const getPlaylistDetailsController = asyncWrapper(async (req, res) => {
+    const { id } = req.params;
+    await Validator.isNumber(id);
+    const playlist = await playlistService.getPlaylistDetails(id);
+    res.status(OK_STATUS).json(playlist);
+});
 
-        // Validate inputs
-        await Validator.validateNotNull({ name });
-        await Validator.isText(name, { minLength: 2, maxLength: 100 });
-        if (description) {
-            await Validator.isText(description, { minLength: 0, maxLength: 500 });
-        }
-        if (song_ids) {
-            const parsedSongs = JSON.parse(song_ids || '[]');
-            await Validator.isArray(parsedSongs, { minLength: 0, maxLength: 50, arrayName: "song_ids" });
-            for (const id of parsedSongs) {
-                await Validator.isNumber(id, { integer: true, min: 1 });
-            }
-        }
-        if (image_file) {
-            await Validator.validateFile(image_file, {
-                allowedTypes: ['image/jpeg', 'image/png'],
-                maxSize: 5 * 1024 * 1024, // 5MB
-                fieldName: 'image',
-            });
-        }
+export const createUserPlaylistController = asyncWrapper(async (req, res) => {
+    const { name, description, songs_list } = req.body;
+    const userId = req.user.id; // Get user from auth middleware
 
-        const playlist = await createPlaylist({
-            name,
-            description: description || null,
-            image: image_file ? 'images/playlists/' + image_file.filename : null,
-            song_ids: song_ids ? JSON.parse(song_ids) : [],
-        });
+    await Validator.validateNotNull({ name });
+    await Validator.isText(name, { minLength: 1, maxLength: 100 });
+    if (description) await Validator.isText(description, { maxLength: 500 });
 
-        return res.status(OK_STATUS).json(playlist);
-    }
-);
+    const playlist = await playlistService.createUserPlaylist({ name, description, userId, songs_list: songs_list ?? [] });
+    res.status(CREATED_STATUS).json(playlist);
+});
 
-export const deletePlaylistController = asyncWrapper(
+export const addSongToPlaylistController = asyncWrapper(async (req, res) => {
+    const { id: playlistId } = req.params;
+    const { song_id } = req.body;
+
+    await Validator.isNumber(playlistId);
+    await Validator.isNumber(song_id);
+    
+    await playlistService.addSongToPlaylist(playlistId, song_id);
+    res.status(CREATED_STATUS).json({ message: "Song added successfully." });
+});
+
+export const removeSongFromPlaylistController = asyncWrapper(async (req, res) => {
+    const { id: playlistId, songId } = req.params;
+    await Validator.isNumber(playlistId);
+    await Validator.isNumber(songId);
+
+    await playlistService.removeSongFromPlaylist(playlistId, songId);
+    res.status(OK_STATUS).json({ message: "Song removed successfully." });
+});
+
+export const updatePlaylistMetadataController = asyncWrapper(async (req, res) => {
+    const { id: playlistId } = req.params;
+    // const user_id = req.user.id;
+    const { name, description } = req.body;
+    const image = req.file;
+
+    const image_source = image != null ? 'images/playlists/' + image.filename : undefined
+
+    if (name) await Validator.isText(name, { minLength: 1, maxLength: 100 });
+    if (description) await Validator.isText(description, { maxLength: 500 });
+
+    const updatedPlaylist = await playlistService.updatePlaylistMetadata(playlistId, { name, description, image: image_source });
+    res.status(OK_STATUS).json(updatedPlaylist);
+});
+
+export const deleteUserPlaylistController = asyncWrapper(async (req, res) => {
+    const { id: playlistId } = req.params;
+    const userId = req.user.id;
+
+    await Validator.isNumber(playlistId);
+    await playlistService.deleteUserPlaylist(playlistId, userId);
+    res.status(OK_STATUS).json({ message: "Playlist deleted successfully." });
+});
+
+export const regeneratePlaylistController = asyncWrapper(async (req, res) => {
+    const { id: playlistId } = req.body; // Or req.params depending on your route
+    await Validator.isNumber(playlistId);
+    const result = await playlistService.regeneratePlaylist(playlistId);
+    res.status(OK_STATUS).json(result);
+});
+
+// --- Personalization Controllers ---
+export const getForYouPlaylistsController = asyncWrapper(async (req, res) => {
+    const userId = req.user.id;
+    const playlists = await playlistService.getForYouPlaylists(userId);
+    res.status(OK_STATUS).json(playlists);
+});
+
+export const getLikedSongsPlaylistController = asyncWrapper(
     async (req, res) => {
-        const { id } = req.params;
-        await Validator.isNumber(id, { integer: true, min: 1 });
-        const deletedPlaylist = await deletePlaylist(id);
-        return res.status(OK_STATUS).json(deletedPlaylist);
+        const user_id = req.user.id;
+        const playlist = await playlistService.getLikedSongsPlaylist(user_id);
+       
+        
+        console.log('gottttttttttttttt');
+        
+        res.status(OK_STATUS).json(playlist);
     }
 );
 
-export const updatePlaylistController = asyncWrapper(
-    async (req, res) => {
-        const { id } = req.params;
-        const { name, description, user_id, song_ids, is_active } = req.body;
-        const image_file = req.file;
 
-        // Validate inputs
-        await Validator.isNumber(id, { integer: true, min: 1 });
-        await Validator.validateNotNull({ name });
-        await Validator.isText(name, { minLength: 2, maxLength: 100 });
-        if (user_id) {
-            await Validator.isNumber(user_id, { integer: true, min: 1 });
-        }
-        if (description) {
-            await Validator.isText(description, { minLength: 0, maxLength: 500 });
-        }
-        if (song_ids) {
-            const parsedSongs = JSON.parse(song_ids || '[]');
-            await Validator.isArray(parsedSongs, { minLength: 0, maxLength: 50, arrayName: "song_ids" });
-            for (const id of parsedSongs) {
-                await Validator.isNumber(id, { integer: true, min: 1 });
-            }
-        }
-        if (is_active !== undefined) {
-            await Validator.isEnum(is_active, [true, false], "is_active must be a boolean");
-        }
-        if (image_file) {
-            await Validator.validateFile(image_file, {
-                allowedTypes: ['image/jpeg', 'image/png'],
-                maxSize: 5 * 1024 * 1024,
-                fieldName: 'image',
-            });
-        }
+export const getRecentPlayedSongsPlaylistController = asyncWrapper(async (req, res) => {
+    const userId = req.user.id;
+    const playlist = await playlistService.getRecentPlayedSongsPlaylist(userId);
+    
+    res.status(OK_STATUS).json(playlist);
+});
 
-        const updatedPlaylist = await updatePlaylist({
-            id,
-            payload: {
-                name,
-                description: description || undefined,
-                image: image_file ? 'images/playlists/' + image_file.filename : undefined,
-                user_id: user_id ? +user_id : undefined,
-                song_ids: song_ids ? JSON.parse(song_ids) : undefined,
-                is_active: is_active !== undefined ? is_active : undefined,
-            },
-        });
+export const getDailyMixPlaylistController = asyncWrapper(async (req, res) => {
+    const userId = req.user.id;
+    const playlist = await playlistService.getDailyMixPlaylist(userId);
+    res.status(OK_STATUS).json(playlist);
+});
 
-        return res.status(OK_STATUS).json(updatedPlaylist);
-    }
-);
+
+export const getPlaylistSongsController = asyncWrapper(async (req, res) => {
+    const { id: playlistId } = req.params;
+    await Validator.isNumber(playlistId);
+    
+    const songs = await playlistService.getPlaylistSongs(playlistId);
+    res.status(OK_STATUS).json(songs);
+});

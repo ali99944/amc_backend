@@ -68,7 +68,7 @@ export async function seedUsers() {
       password: await argon2.hash('dev'),
       gender: 'male',
       birth_date: new Date('2000-09-23'),
-      profile_picture: 'https://img.freepik.com/free-photo/portrait-young-person-smiling_23-2149084951.jpg',
+      // profile_picture: 'https://img.freepik.com/free-photo/portrait-young-person-smiling_23-2149084951.jpg',
       is_active: true,
       is_banned: true,
       joined_at: new Date('2025-05-20T12:00:00Z'),

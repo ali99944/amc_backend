@@ -1,9 +1,0 @@
-model recommendations {
-  id       Int   @id @default(autoincrement())
-  user     users    @relation(fields: [user_id], references: [id])
-  user_id   Int
-  
-  type     String   // song or playlist
-  liked    Boolean? @default(false)
-  createdAt DateTime @default(now())
-}

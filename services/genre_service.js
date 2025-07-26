@@ -1,5 +1,8 @@
 import prisma from "../lib/prisma.js";
 import promiseAsyncWrapper from "../lib/wrappers/promise_async_wrapper.js";
+import { AlbumDTO } from "../mappers/album.dto.js";
+import { ArtistDTO } from "../mappers/artist.dto.js";
+import { PlaylistDTO } from "../mappers/playlist.dto.js";
 
 // genre_service.js
 export const getAllGenres = async () => new Promise(
@@ -29,12 +32,6 @@ export const getAllGenres = async () => new Promise(
 export const createGenre = async ({ name, description, image, color }) => new Promise(
     promiseAsyncWrapper(
         async (resolve) => {
-            console.log(name);
-            console.log(description);
-            console.log(image);
-            console.log(color);
-            
-
             const genre = await prisma.genres.create({
                 data: {
                     name,
@@ -115,6 +112,115 @@ export const updateGenre = async ({ id, payload }) => new Promise(
             };
 
             return resolve(mappedGenre);
+        }
+    )
+);
+
+
+export const getGenreArtists = async (genreId) => new Promise(
+    promiseAsyncWrapper(
+        async (resolve) => {
+            // const artists = await prisma.artist_genre.findMany({
+            //     where: {
+            //         genre_id: +genreId,
+            //     },
+            //     include: {
+            //         artist: true,
+            //     }
+            // });
+
+            const artists = await prisma.artists.findMany({
+                include: {
+                    genres: true
+                }
+            })
+                
+            console.log(artists);
+            
+
+            return resolve(
+                ArtistDTO.fromMany(artists)
+            );
+        }
+    )
+);
+
+export const getGenreNewReleases = async (genreId) => new Promise(
+    promiseAsyncWrapper(
+        async (resolve) => {
+            const new_releases = await prisma.albums.findMany({
+                where: {
+                    // genre_id: +genreId,
+                    is_active: true
+                },
+                orderBy: {
+                    created_at: 'desc'
+                },
+                take: 10, // Limit to latest 10 releases
+                include: {
+                    artist: true,
+                    songs: {
+                        include: {
+                            song: {
+                                include:{
+                                    artist: true,
+                                    original_audio: true
+                                }
+                            }
+                        }
+                    },
+                    _count: {
+                        select: {
+                            songs: true
+                        }
+                    }
+                }
+            });
+
+
+            console.log(new_releases);
+            
+
+            return resolve(
+                AlbumDTO.fromMany(new_releases)
+            );
+        }
+    )
+);
+
+export const getGenrePlaylists = async (genreId) => new Promise(
+    promiseAsyncWrapper(
+        async (resolve) => {
+            const playlists = await prisma.playlists.findMany({
+                where: {
+                    isActive: true,
+                    type: 'system',
+                    source: {
+                        not: 'ai'
+                    }
+                    
+                },
+                include: {
+                    songs: {
+                        include: {
+                            song: {
+                                include: {
+                                    original_audio: true,
+                                    genre: true
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // const filtered_playlists = playlists.filter(playlist => {
+            //     return playlist.genre.id.toLowerCase() == genreId.toString().toLowerCase()
+            // })
+
+            return resolve(
+                PlaylistDTO.fromMany(playlists)
+            );
         }
     )
 );

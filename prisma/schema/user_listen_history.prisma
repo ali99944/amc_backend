@@ -6,4 +6,10 @@ model user_listen_history {
 
     song_id Int
     song songs @relation(fields: [song_id], references: [id], onDelete: Cascade)
+
+    @@unique([user_id, song_id])
+
+    played_at DateTime @default(now())
+    played_duration Int? @default(0)
+    played_percentage Int? @default(0)
 }

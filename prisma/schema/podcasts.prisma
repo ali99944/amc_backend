@@ -1,0 +1,7 @@
+model Podcast {
+  id          Int      @id @default(autoincrement())
+  name        String
+  author      String
+  image       String
+  description String
+}

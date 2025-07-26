@@ -1,16 +1,16 @@
 // song_controller.js
 import { ApiError } from "../lib/api_error.js";
 import { BAD_REQUEST_CODE } from "../lib/error_codes.js";
+import prisma from "../lib/prisma.js";
 import { generateTrackNumber } from "../lib/random.js";
 import { BAD_REQUEST_STATUS, OK_STATUS } from "../lib/status_codes.js";
 import Validator from "../lib/validator.js";
 import asyncWrapper from "../lib/wrappers/async_wrapper.js";
-import { createSong, deleteSong, getAllSongs, getSongById, searchSongs, updateSong } from "../services/song_service.js";
+import { checkIsSongLiked, createSong, deleteSong, getAllSongs, getSongById, likeSong, searchSongs, unlikeSong, updateSong } from "../services/song_service.js";
 
 export const getAllSongsController = asyncWrapper(
     async (_, res) => {
         const songs = await getAllSongs();
-        console.log(songs);
         
         return res.status(OK_STATUS).json(songs);
     }
@@ -138,5 +138,60 @@ export const searchSongsController = asyncWrapper(
         const { q } = req.query;
         const songs = await searchSongs(q);
         return res.status(OK_STATUS).json(songs);
+    }
+);
+
+export const checkSongLikeController = asyncWrapper(
+    async (req, res) => {
+        const { id: song_id } = req.params;
+        const user_id = req.user.id;
+
+
+
+        // Validate inputs
+        if (!song_id) {
+            return res.status(400).json({ error: 'Invalid song ID' });
+        }
+
+        const result = await checkIsSongLiked({
+            user_id: user_id,
+            song_id: parseInt(song_id)
+        });
+        
+        return res.status(200).json({ isLiked: result });
+    }
+);
+
+
+export const likeSongController = asyncWrapper(
+    async (req, res) => {
+        const { id: song_id } = req.params;
+        const user_id = req.user.id;
+
+        // Validate inputs
+        await Validator.isNumber(song_id, { integer: true, min: 1 });
+        await Validator.isNumber(user_id, { integer: true, min: 1 });
+
+        await likeSong(song_id, user_id);
+        return res.status(OK_STATUS).json({ message: 'Song liked successfully' });
+    }
+);
+
+export const unlikeSongController = asyncWrapper(
+    async (req, res) => {
+        const { id: song_id } = req.params;
+        const user_id = req.user.id;
+
+        console.log(song_id);
+        console.log(user_id);
+        
+
+
+        // Validate inputs
+        await Validator.isNumber(song_id, { integer: true, min: 1 });
+        await Validator.isNumber(user_id, { integer: true, min: 1 });
+
+        await unlikeSong(song_id, user_id);
+        return res.status(OK_STATUS).json({ message: 'Song unliked successfully' });
     }
 );

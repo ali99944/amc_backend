@@ -1,32 +1,23 @@
 // artist_service.js
 import prisma from "../lib/prisma.js";
 import promiseAsyncWrapper from "../lib/wrappers/promise_async_wrapper.js";
+import { ArtistDTO } from "../mappers/artist.dto.js";
+import { ArtistProfileDTO } from "../mappers/artist_profile.dto.js";
 
 export const getAllArtists = async () => new Promise(
     promiseAsyncWrapper(
         async (resolve) => {
             const artists = await prisma.artists.findMany({
                 include: {
-                    genres: true, // To compute genres_count
-                    songs: true,  // To compute songs_count
+                    genres: true
                 },
             });
 
-            // Map to interface
-            const mappedArtists = artists.map(artist => ({
-                id: artist.id,
-                name: artist.name,
-                image: artist.image,
-                bio: artist.bio || '',
-                is_featured: artist.is_featured,
-                is_active: artist.is_active,
-                songs_count: artist.songs.length,
-                genres_count: artist.genres.length,
-                total_followers: artist.total_followers,
-                created_at: artist.created_at.toISOString(),
-            }));
 
-            return resolve(mappedArtists);
+
+            return resolve(
+                ArtistDTO.fromMany(artists)
+            );
         }
     )
 );
@@ -48,26 +39,14 @@ export const createArtist = async ({ name, bio, image, is_featured, genre_ids })
                     } : undefined,
                 },
                 include: {
-                    genres: true,
-                    songs: true,
+                    genres: true
                 },
             });
 
-            // Map to interface
-            const mappedArtist = {
-                id: artist.id,
-                name: artist.name,
-                image: artist.image,
-                bio: artist.bio || '',
-                is_featured: artist.is_featured,
-                is_active: artist.is_active,
-                songs_count: artist.songs.length,
-                genres_count: artist.genres.length,
-                total_followers: artist.total_followers,
-                created_at: artist.created_at.toISOString(),
-            };
 
-            return resolve(mappedArtist);
+            return resolve(
+                ArtistDTO.from(artist)
+            );
         }
     )
 );
@@ -75,31 +54,13 @@ export const createArtist = async ({ name, bio, image, is_featured, genre_ids })
 export const deleteArtist = async (id) => new Promise(
     promiseAsyncWrapper(
         async (resolve) => {
-            const artist = await prisma.artists.delete({
+            await prisma.artists.delete({
                 where: {
                     id: +id,
-                },
-                include: {
-                    genres: true,
-                    songs: true,
-                },
+                }
             });
 
-            // Map to interface
-            const mappedArtist = {
-                id: artist.id,
-                name: artist.name,
-                image: artist.image,
-                bio: artist.bio || '',
-                is_featured: artist.is_featured,
-                is_active: artist.is_active,
-                songs_count: artist.songs.length,
-                genres_count: artist.genres.length,
-                total_followers: artist.total_followers,
-                created_at: artist.created_at.toISOString(),
-            };
-
-            return resolve(mappedArtist);
+            return resolve(true);
         }
     )
 );
@@ -139,26 +100,14 @@ export const updateArtist = async ({ id, payload }) => new Promise(
                     genres: genre_ids ? genreUpdate : undefined,
                 },
                 include: {
-                    genres: true,
-                    songs: true,
+                    genres: true
                 },
             });
 
-            // Map to interface
-            const mappedArtist = {
-                id: artist.id,
-                name: artist.name,
-                image: artist.image,
-                bio: artist.bio || '',
-                is_featured: artist.is_featured,
-                is_active: artist.is_active,
-                songs_count: artist.songs.length,
-                genres_count: artist.genres.length,
-                total_followers: artist.total_followers,
-                created_at: artist.created_at.toISOString(),
-            };
 
-            return resolve(mappedArtist);
+            return resolve(
+                ArtistDTO.from(artist)
+            );
         }
     )
 );
@@ -169,46 +118,39 @@ export const getArtistProfile = async (id) => new Promise(
             const artist = await prisma.artists.findUnique({
                 where: { id: +id },
                 include: {
-                    genres: true,
-                    songs: {
-                        include: {
-                            original_audio: true
-                        }
-                    },
+                    genres: true
                 },
             });
+
+            
 
             if (!artist) {
                 throw new ApiError('Artist not found', 404, 'Not Found');
             }
 
-            // Map to interface
-            const mappedArtist = {
-                id: artist.id,
-                name: artist.name,
-                image: artist.image,
-                bio: artist.bio || '',
-                is_featured: artist.is_featured,
-                is_active: artist.is_active,
-                songs_count: artist.songs.length,
-                genres_count: artist.genres.length,
-                total_followers: artist.total_followers,
-                created_at: artist.created_at.toISOString(),
-            };
 
-            const topTracks = artist.songs.map(s => ({
-                id: s.id,
-                title: s.title,
-                image: s.image,
-                duration: s.original_audio.duration,
-                track_number: s.track_number,
-                is_active: s.is_active,
-                is_featured: s.is_featured,
-                original_audio: s.original_audio,
-                created_at: s.created_at
-            }));
+            const tracks = await prisma.songs.findMany({
+                where: {
+                    artist_id: artist.id
+                },
 
-            const relatedArtists = await prisma.artists.findMany({
+                include: {
+                    original_audio: true
+                }
+            })            
+
+            const albums = await prisma.albums.findMany({
+                where: {
+                    artist_id: artist.id
+                },
+
+                include: {
+                    artist: true
+                }
+            })
+
+
+            const related_artists = await prisma.artists.findMany({
                 where: {
                     id: { not: artist.id },
                     genres: {
@@ -217,30 +159,111 @@ export const getArtistProfile = async (id) => new Promise(
                         },
                     },
                 },
-                select: {
-                    id: true,
-                    name: true,
-                    image: true,
-                    bio: true,
-                    is_featured: true
-                },
                 take: 5,
             });
 
-            const mappedRelatedArtists = relatedArtists.map(a => ({
-                id: a.id,
-                name: a.name,
-                image: a.image,
-                bio: a.bio || '',
-                is_featured: a.is_featured,
-                total_followers: 0
-            }));
+            
 
-            return resolve({
-                artistDetails: mappedArtist,
-                topTracks,
-                relatedArtists: mappedRelatedArtists,
+            return resolve(
+                ArtistProfileDTO.from({
+                    albums, 
+                    top_tracks: tracks,
+                    artist: artist,
+                    related_artists: related_artists
+                })
+            )
+        }
+    )
+);
+
+export const followArtist = async ({ user_id, artist_id }) => new Promise(
+    promiseAsyncWrapper(
+        async (resolve) => {
+            // Check if already followed
+            const existing = await prisma.artist_followers.findUnique({
+                where: {
+                    user_id_artist_id: {
+                        user_id: +user_id,
+                        artist_id: +artist_id
+                    }
+                }
             });
+            if (existing) {
+                return resolve({ followed: true, message: "Already following" });
+            }
+            const follow = await prisma.artist_followers.create({
+                data: {
+                    user_id: +user_id,
+                    artist_id: +artist_id
+                }
+            });
+            // Optionally increment followers_count on artist
+            await prisma.artists.update({
+                where: { id: +artist_id },
+                data: { followers_count: { increment: 1 } }
+            });
+            return resolve({ followed: true, follow });
+        }
+    )
+);
+
+export const unfollowArtist = async ({ user_id, artist_id }) => new Promise(
+    promiseAsyncWrapper(
+        async (resolve) => {
+            const deleted = await prisma.artist_followers.deleteMany({
+                where: {
+                    user_id: +user_id,
+                    artist_id: +artist_id
+                }
+            });
+            // Optionally decrement followers_count on artist
+            if (deleted.count > 0) {
+                await prisma.artists.update({
+                    where: { id: +artist_id },
+                    data: { followers_count: { decrement: 1 } }
+                });
+            }
+            return resolve({ followed: false, deleted: deleted.count });
+        }
+    )
+);
+
+export const isUserFollowingArtist = async ({ user_id, artist_id }) => new Promise(
+    promiseAsyncWrapper(
+        async (resolve) => {
+            const follow = await prisma.artist_followers.findUnique({
+                where: {
+                    user_id_artist_id: {
+                        user_id: +user_id,
+                        artist_id: +artist_id
+                    }
+                }
+            });
+            // return resolve({ isFollowing: !!follow });
+            return resolve(!!follow);
+        }
+    )
+);
+
+export const getFollowedArtists = async (user_id) => new Promise(
+    promiseAsyncWrapper(
+        async (resolve) => {
+            const followedArtists = await prisma.artists.findMany({
+                where: {
+                    artist_followers: {
+                        some: {
+                            user_id: +user_id
+                        }
+                    }
+                },
+                include: {
+                    genres: true
+                }
+            });
+
+            return resolve(
+                ArtistDTO.fromMany(followedArtists)
+            );
         }
     )
 );

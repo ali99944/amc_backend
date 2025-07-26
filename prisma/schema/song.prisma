@@ -6,10 +6,25 @@ model songs {
   created_at   DateTime  @default(now())
   updated_at   DateTime? @updatedAt
 
-  is_explicit Boolean @default(false)
   track_number String
   original_audio audio?
   
+  lyrics String?
+  description String?
+  release_date String?
+  copyrights String?
+
+  play_count Int @default(0)
+
+  is_explicit Boolean @default(false)
+  is_featured Boolean @default(false)
+  is_published Boolean @default(false)
+  is_verified Boolean @default(false)
+  is_remix Boolean @default(false)
+  is_collaboration Boolean @default(false)
+  is_playable Boolean @default(true)
+  is_downloadable Boolean @default(true)
+
 
   //relations
   artist_id    Int?
@@ -19,33 +34,26 @@ model songs {
   genre      genres?   @relation(fields: [genre_id], references: [id], onDelete: SetNull)
 
 
-  playlist_song playlist_song[]
-  user_playlist_song user_playlist_song[]
-  song_plays song_plays[]
-  user_favorite_songs user_favorite_songs[]
-
-  lyrics String?
-  description String?
-  release_date String?
-
-
-  UserPlayHistory UserPlayHistory[]
-
-  copyrights copyrights[]
-
   song_tags song_tags[]
 
 
   audio_versions audio_versions[]
-
   user_listen_history user_listen_history[]
+  album_songs album_songs[]
+  playlist_songs playlist_songs[]
+  user_song_likes user_song_likes[]
+
+  song_plays song_play[]
 }
 
-model song_plays {
-  id         Int      @id @default(autoincrement())
-  user_id    Int
-  song_id    Int
-  played_at  DateTime @default(now())
-  user       users    @relation(fields: [user_id], references: [id])
-  song       songs    @relation(fields: [song_id], references: [id])
+
+model song_play {
+  id        Int      @id @default(autoincrement())
+  song_id   Int
+  played_at DateTime @default(now())
+  user_id   Int?
+
+  // relations
+  song      songs    @relation(fields: [song_id], references: [id], onDelete: Cascade)
+  user      users?   @relation(fields: [user_id], references: [id], onDelete: SetNull)
 }

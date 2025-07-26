@@ -4,7 +4,6 @@ import asyncWrapper from "../lib/wrappers/async_wrapper.js";
 
 export const getAllPermissionsController = asyncWrapper(
     async (_, res) => {
-        console.log(' iwas gdgad');
         
         return res.status(OK_STATUS).json(PERMISSIONS)
     }
@@ -12,7 +11,6 @@ export const getAllPermissionsController = asyncWrapper(
 
 export const storeManagerPermissionsController = asyncWrapper(
     async (req, res) => {
-        console.log(req.body);
         const { id, permissions } = req.body;
         
         

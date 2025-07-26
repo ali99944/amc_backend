@@ -1,0 +1,20 @@
+@baseUrl = http://localhost:4001/api
+@authToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NiwiZW1haWwiOiJkZXZAYW1jLmNvbSIsImlhdCI6MTc1MjcwNjIwOCwiZXhwIjoxNzU1Mjk4MjA4fQ.B6lzv2mZD291CwpAOrT8ggpJ-FmFvw2ij565ttS1vDs
+
+### Create new playlist
+POST {{baseUrl}}/playlists
+Content-Type: application/json
+Authorization: {{authToken}}
+
+{
+    "name": "My Awesome Playlist",
+    "description": "A collection of my favorite songs"
+}
+
+### Get like songs playlist
+GET {{baseUrl}}/playlists/liked-songs
+Authorization: {{authToken}}
+
+### Get all user playlists
+GET {{baseUrl}}/playlists
+Authorization: {{authToken}}

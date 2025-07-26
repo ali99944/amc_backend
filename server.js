@@ -37,7 +37,7 @@ const main = async () => {
             (await import('./routes/songs_route.js')).default,
             (await import('./routes/genre_route.js')).default,
             (await import('./routes/playlist_route.js')).default,
-            (await import('./routes/user_playlist_route.js')).default,
+            (await import('./routes/manager_playlist_route.js')).default,
             (await import('./routes/analytics_route.js')).default,
             (await import('./routes/statistics_route.js')).default,
             (await import('./routes/recommendation_route.js')).default,
@@ -54,6 +54,9 @@ const main = async () => {
             (await import('./routes/tag_route.js')).default,
             (await import('./routes/language_route.js')).default,
             (await import('./routes/permissions_route.js')).default,
+            (await import('./routes/search_route.js')).default,
+            (await import('./routes/core_route.js')).default,
+            (await import('./routes/album_route.js')).default,
         )
 
         app.get('*', (req ,res) => {            

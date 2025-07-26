@@ -124,9 +124,7 @@ export const getCurrentManagerController = asyncWrapper(
       throw new ApiError("Token is required", BAD_REQUEST_CODE, BAD_REQUEST_STATUS);
     }
 
-    console.log(token);
     const decoded = await verifyToken(token);
-    console.log(decoded);
     
     const manager = await prisma.managers.findUnique({ 
       where: { id: decoded.id }
