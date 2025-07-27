@@ -55,7 +55,6 @@ const main = async () => {
             (await import('./routes/language_route.js')).default,
             (await import('./routes/permissions_route.js')).default,
             (await import('./routes/search_route.js')).default,
-            (await import('./routes/core_route.js')).default,
             (await import('./routes/album_route.js')).default,
         )
 

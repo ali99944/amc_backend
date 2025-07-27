@@ -1,7 +1,6 @@
 // manager_auth_middleware.js
 import { verifyToken } from '../services/manager_auth_service.js';
 import { ApiError } from '../lib/api_error.js';
-import { ROLE_PERMISSIONS } from '../lib/permissions.js';
 import asyncWrapper from '../lib/wrappers/async_wrapper.js';
 import { BAD_REQUEST_CODE } from '../lib/error_codes.js';
 import { NOT_AUTHORIZED_STATUS } from '../lib/status_codes.js';

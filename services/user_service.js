@@ -39,7 +39,7 @@ export const getUserById = async (id) => new Promise(
   )
 );
 
-export const updateUser = async ({ id, payload }) => new Promise(
+export const updateUserProfile = async ({ id, payload }) => new Promise(
   promiseAsyncWrapper(
     async (resolve) => {
       const { name, birth_date, gender, phone_number, profile_picture, is_banned, settings } = payload;
@@ -358,6 +358,8 @@ export const completeOnboarding = async ({ user_id, artist_ids, genre_ids }) => 
     }
   )
 );
+
+
 
 export const deleteUserAccount = async (userId) => new Promise(
   promiseAsyncWrapper(

@@ -1,4 +1,3 @@
-import argon2 from 'argon2';
 import prisma from '../../lib/prisma.js';
 
 export async function seedSongs() {

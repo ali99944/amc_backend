@@ -1,11 +1,12 @@
 // user_route.js
 import express from 'express';
-import {  completeOnboardingController, deleteUserController, deleteUserWithRelatedDataController, getAllUsersController, getCurrentUserController, getUserArtistPreferencesController, getUserGenrePreferencesController, getUserSettingsController, updateUserArtistPreferencesController, updateUserController, updateUserGenrePreferencesController, updateUserSettingsController } from '../controllers/user_controller.js';
+import {  completeOnboardingController, deleteUserController, deleteUserWithRelatedDataController, getAllUsersController, getCurrentUserController, getUserArtistPreferencesController, getUserGenrePreferencesController, getUserSettingsController, updateUserArtistPreferencesController, updateUserGenrePreferencesController, updateUserSettingsController, updateUserProfileController, deleteUserAccountController } from '../controllers/user_controller.js';
 import { activateAccountController, changePasswordController, forgotPasswordController, loginUserController, logoutUserController, refreshTokenController, registerUserController, resetPasswordController, sendRecoveryCodeController, verifyOtpController } from '../controllers/user_auth_controller.js';
 import { verifyUserTokenMiddleware } from '../middlewares/user_auth_middleware.js';
 import { createMulterStorage } from '../services/multer_storage.js';
 import { verifyManagerToken } from '../middlewares/manager_auth_middleware.js';
 import { getFollowedArtistsController } from '../controllers/artist_controller.js';
+import { getAllFavoriteSongsController } from '../controllers/song_controller.js';
 
 const router = express.Router();
 
@@ -22,40 +23,31 @@ router.post('/users/reset-password', resetPasswordController);
 
 // User routes (protected by user token)
 router.get('/me', verifyUserTokenMiddleware, getCurrentUserController);
+router.get('/me/favorites', verifyUserTokenMiddleware, getAllFavoriteSongsController)
 router.get('/me/genres-interests', verifyUserTokenMiddleware, getUserGenrePreferencesController)
 router.get('/me/artists-interests', verifyUserTokenMiddleware, getUserArtistPreferencesController)
 router.post('/me/genres-interests', verifyUserTokenMiddleware, updateUserGenrePreferencesController)
 router.post('/me/artists-interests', verifyUserTokenMiddleware, updateUserArtistPreferencesController)
 router.get('/me/followed-artists', verifyUserTokenMiddleware, getFollowedArtistsController)
-router.put('/me', verifyUserTokenMiddleware, createMulterStorage('images', 'profiles').single('profile_picture'), updateUserController);
+router.put('/me', verifyUserTokenMiddleware, createMulterStorage('images', 'profiles').single('profile_picture'), updateUserProfileController);
 router.delete('/me', verifyUserTokenMiddleware, deleteUserController);
 router.post('/me/change-password', verifyUserTokenMiddleware, changePasswordController);
 
-router.get(
-    '/me/settings',
-    verifyUserTokenMiddleware,
-    getUserSettingsController
-)
+router.get('/me/settings', verifyUserTokenMiddleware, getUserSettingsController)
+router.post('/me/settings', verifyUserTokenMiddleware, updateUserSettingsController)
+router.post('/me/onboarding', verifyUserTokenMiddleware, completeOnboardingController)
+router.delete('/me/account', verifyUserTokenMiddleware, deleteUserAccountController)
 
-router.post(
-    '/me/settings',
-    verifyUserTokenMiddleware,
-    updateUserSettingsController
-)
-
-
-router.post(
-    '/me/onboarding',
-    verifyUserTokenMiddleware,
-    completeOnboardingController
-)
 
 
 
 // Manager routes (protected by manager token)
-router.put('/users/:id/ban', verifyManagerToken, updateUserController);
+// router.put('/users/:id/ban', verifyManagerToken, updateUserProfile);
 router.get('/users', verifyManagerToken, getAllUsersController);
 router.delete('/users/:id', verifyManagerToken, deleteUserWithRelatedDataController);
+router.post('/users/:id/restore-account', completeOnboardingController)
+router.post('/users/:id/delete-account', completeOnboardingController)
+
 
 
 export default router;

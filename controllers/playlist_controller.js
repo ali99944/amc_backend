@@ -132,3 +132,37 @@ export const getPlaylistSongsController = asyncWrapper(async (req, res) => {
     const songs = await playlistService.getPlaylistSongs(playlistId);
     res.status(OK_STATUS).json(songs);
 });
+
+
+
+export const likeSongController = asyncWrapper(
+    async (req, res) => {
+        const userId = req.user.id;
+        const { song_id } = req.body;
+    
+        await Validator.isNumber(song_id);
+        
+        const result = await playlistService.likeSong(userId, song_id);
+        res.status(CREATED_STATUS).json(result);
+    }
+);
+
+export const unlikeSongController = asyncWrapper(async (req, res) => {
+    const userId = req.user.id;
+    const { song_id } = req.params;
+
+    await Validator.isNumber(song_id);
+    
+    const result = await playlistService.unlikeSong(userId, song_id);
+    res.status(OK_STATUS).json(result);
+});
+
+export const checkIsSongLikedController = asyncWrapper(async (req, res) => {
+    const userId = req.user.id;
+    const { song_id } = req.params;
+
+    await Validator.isNumber(song_id);
+    
+    const isLiked = await playlistService.checkIsSongLiked(userId, song_id);
+    res.status(OK_STATUS).json({ isLiked });
+});

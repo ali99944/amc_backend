@@ -1,5 +1,5 @@
 import express from 'express';
-import { checkSongLikeController, createSongController, deleteSongController, getAllSongsController, getSongByIdController, likeSongController, searchSongsController, unlikeSongController, updateSongController } from '../controllers/song_controller.js';
+import { addSongToFavoritesController, checkSongFavoriteController, checkSongLikeController, createSongController, deleteSongController, getAllSongsController, getSongByIdController, likeSongController, removeSongFromFavoritesController, searchSongsController, unlikeSongController, updateSongController } from '../controllers/song_controller.js';
 import { createMulterStorage } from '../services/multer_storage.js';
 import { verifyUserTokenMiddleware } from '../middlewares/user_auth_middleware.js';
 
@@ -29,6 +29,25 @@ router.post(
   '/songs/:id/unlike',
   verifyUserTokenMiddleware,
   unlikeSongController
+);
+
+// --- User Protected Routes
+router.get(
+  '/songs/:id/check-favorite',
+  verifyUserTokenMiddleware,
+  checkSongFavoriteController
+);
+
+router.post(
+  '/songs/:id/add-favorite',
+  verifyUserTokenMiddleware,
+  addSongToFavoritesController
+);
+
+router.post(
+  '/songs/:id/remove-favorite',
+  verifyUserTokenMiddleware,
+  removeSongFromFavoritesController
 );
 
 

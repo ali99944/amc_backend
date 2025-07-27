@@ -22,7 +22,7 @@ router.get(
 router.post(
     '/system/playlists',
     verifyManagerToken,
-    restrictTo(PERMISSIONS.PLAYLIST.CREATE),
+    // restrictTo(PERMISSIONS.PLAYLIST.CREATE),
     createMulterStorage('images', 'playlists').single('image'),
     managerPlaylistController.createSystemPlaylistController
 );

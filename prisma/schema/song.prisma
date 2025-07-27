@@ -44,6 +44,8 @@ model songs {
   user_song_likes user_song_likes[]
 
   song_plays song_play[]
+
+  user_song_favorites user_song_favorites[]
 }
 
 

@@ -6,7 +6,7 @@ import { generateTrackNumber } from "../lib/random.js";
 import { BAD_REQUEST_STATUS, OK_STATUS } from "../lib/status_codes.js";
 import Validator from "../lib/validator.js";
 import asyncWrapper from "../lib/wrappers/async_wrapper.js";
-import { checkIsSongLiked, createSong, deleteSong, getAllSongs, getSongById, likeSong, searchSongs, unlikeSong, updateSong } from "../services/song_service.js";
+import { addSongToFavorites, checkIsSongFavorite, checkIsSongLiked, createSong, deleteSong, getAllFavoriteSongs, getAllSongs, getSongById, likeSong, removeSongFromFavorites, searchSongs, unlikeSong, updateSong } from "../services/song_service.js";
 
 export const getAllSongsController = asyncWrapper(
     async (_, res) => {
@@ -181,9 +181,6 @@ export const unlikeSongController = asyncWrapper(
     async (req, res) => {
         const { id: song_id } = req.params;
         const user_id = req.user.id;
-
-        console.log(song_id);
-        console.log(user_id);
         
 
 
@@ -193,5 +190,65 @@ export const unlikeSongController = asyncWrapper(
 
         await unlikeSong(song_id, user_id);
         return res.status(OK_STATUS).json({ message: 'Song unliked successfully' });
+    }
+);
+
+
+export const addSongToFavoritesController = asyncWrapper(
+    async (req, res) => {
+        const { id: song_id } = req.params;
+        const user_id = req.user.id;
+
+        // Validate inputs
+        await Validator.isNumber(song_id, { integer: true, min: 1 });
+        await Validator.isNumber(user_id, { integer: true, min: 1 });
+
+        await addSongToFavorites(song_id, user_id);
+        return res.status(OK_STATUS).json({ message: 'Song added to favorites successfully' });
+    }
+);
+
+export const removeSongFromFavoritesController = asyncWrapper(
+    async (req, res) => {
+        const { id: song_id } = req.params;
+        const user_id = req.user.id;
+
+        // Validate inputs
+        await Validator.isNumber(song_id, { integer: true, min: 1 });
+        await Validator.isNumber(user_id, { integer: true, min: 1 });
+
+        await removeSongFromFavorites(song_id, user_id);
+        return res.status(OK_STATUS).json({ message: 'Song removed from favorites successfully' });
+    }
+);
+
+export const checkSongFavoriteController = asyncWrapper(
+    async (req, res) => {
+        const { id: song_id } = req.params;
+        const user_id = req.user.id;
+
+        // Validate inputs
+        await Validator.isNumber(song_id, { integer: true, min: 1 });
+        await Validator.isNumber(user_id, { integer: true, min: 1 });
+
+        const result = await checkIsSongFavorite({
+            song_id: parseInt(song_id),
+            user_id: user_id
+        });
+        
+        return res.status(OK_STATUS).json({ isFavorite: result });
+    }
+);
+
+
+export const getAllFavoriteSongsController = asyncWrapper(
+    async (req, res) => {
+        const user_id = req.user.id;
+
+        // Validate inputs
+        await Validator.isNumber(user_id, { integer: true, min: 1 });
+
+        const favoriteSongs = await getAllFavoriteSongs(user_id);
+        return res.status(OK_STATUS).json(favoriteSongs);
     }
 );

@@ -13,6 +13,17 @@ model user_settings {
   repeat_playback  Boolean @default(false)
 
   play_next_song_automatically Boolean  @default(true)
+
+  audio_quality AudioQualityOptions @default(automatic)
+
   created_at                   DateTime @default(now())
   updated_at                   DateTime @updatedAt
+}
+
+enum AudioQualityOptions {
+  automatic
+  low
+  normal
+  hight
+  very_high
 }

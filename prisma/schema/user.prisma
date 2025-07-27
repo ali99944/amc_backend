@@ -38,6 +38,8 @@ model users {
   following_artists artist_followers[]
 
   song_play_history song_play[]
+
+  user_song_favorites user_song_favorites[]
 }
 
 
@@ -59,4 +61,15 @@ model user_song_likes {
   song       songs    @relation(fields: [song_id], references: [id], onDelete: Cascade)
 
   @@unique([user_id, song_id]) // Prevent duplicate likes
+}
+
+model user_song_favorites {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  song_id    Int
+  created_at DateTime @default(now())
+  user       users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  song       songs    @relation(fields: [song_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, song_id]) // Prevent duplicate favorites
 }

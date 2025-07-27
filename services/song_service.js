@@ -259,3 +259,110 @@ export const unlikeSong = async (song_id, user_id) => new Promise(
         }
     )
 );
+
+
+export const addSongToFavorites = async (song_id, user_id) => new Promise(
+    promiseAsyncWrapper(
+        async (resolve) => {
+            // Check if song exists
+            const song = await prisma.songs.findUnique({
+                where: { id: +song_id }
+            });
+
+            if (!song) {
+                throw new ApiError('Song not found', BAD_REQUEST_CODE, BAD_REQUEST_STATUS);
+            }
+
+            // Check if already in favorites
+            const existingFavorite = await prisma.user_song_favorites.findFirst({
+                where: {
+                    song_id: +song_id,
+                    user_id: +user_id
+                }
+            });
+
+            if (existingFavorite) {
+                throw new ApiError('Song already in favorites', BAD_REQUEST_CODE, BAD_REQUEST_STATUS);
+            }
+
+            // Add to favorites
+            await prisma.user_song_favorites.create({
+                data: {
+                    song_id: +song_id,
+                    user_id: +user_id
+                }
+            });
+
+            return resolve(true);
+        }
+    )
+);
+
+export const removeSongFromFavorites = async (song_id, user_id) => new Promise(
+    promiseAsyncWrapper(
+        async (resolve) => {
+            // Check if favorite exists
+            const favorite = await prisma.user_song_favorites.findFirst({
+                where: {
+                    song_id: +song_id,
+                    user_id: +user_id
+                }
+            });
+
+            if (!favorite) {
+                throw new ApiError('Song not in favorites', BAD_REQUEST_CODE, BAD_REQUEST_STATUS);
+            }
+
+            // Remove from favorites
+            await prisma.user_song_favorites.delete({
+                where: {
+                    id: favorite.id
+                }
+            });
+
+            return resolve(true);
+        }
+    )
+);
+
+export const checkIsSongFavorite = async ({ song_id, user_id }) => new Promise(
+    promiseAsyncWrapper(
+        async (resolve) => {
+            const favorite = await prisma.user_song_favorites.findFirst({
+                where: {
+                    song_id: +song_id,
+                    user_id: +user_id
+                }
+            });            
+
+            return resolve(!!favorite); // Returns true if in favorites, false if not
+        }
+    )
+);
+
+
+export const getAllFavoriteSongs = async (user_id) => new Promise(
+    promiseAsyncWrapper(
+        async (resolve) => {
+            const favorites = await prisma.user_song_favorites.findMany({
+                where: {
+                    user_id: +user_id
+                },
+                include: {
+                    song: {
+                        include: {
+                            genre: true,
+                            artist: true,
+                            original_audio: true
+                        }
+                    }
+                }
+            });
+
+            // Map the songs from favorites and convert to DTO
+            const favoriteSongs = favorites.map(favorite => SongDTO.from(favorite.song));
+
+            return resolve(favoriteSongs);
+        }
+    )
+);

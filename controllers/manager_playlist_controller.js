@@ -11,18 +11,22 @@ export const getAllPlaylistsAsManagerController = asyncWrapper(async (req, res) 
     res.status(OK_STATUS).json(playlists);
 });
 
-export const createSystemPlaylistController = asyncWrapper(async (req, res) => {
-    const { name, description, image, source, song_ids } = req.body;
+export const createSystemPlaylistController = asyncWrapper(
+    async (req, res) => {
+        const { name, description, image, source, song_ids } = req.body;
+        console.log(req.body);
+        
+        
     
-
-    await Validator.validateNotNull({ name, source });
-    await Validator.isText(name, { minLength: 1, maxLength: 100 });
-    await Validator.isEnum(source, ['curated', 'editorial', 'trending']); // Manager can only create these types
-    if (song_ids) await Validator.isArrayOfNumbers(song_ids);
-
-    const playlist = await managerPlaylistService.createSystemPlaylist({ name, description, image, source, song_ids });
-    res.status(CREATED_STATUS).json(playlist);
-});
+        await Validator.validateNotNull({ name, source });
+        await Validator.isText(name, { minLength: 1, maxLength: 100 });
+        await Validator.isEnum(source, ['curated', 'editorial', 'trending']); // Manager can only create these types
+        // if (song_ids) await Validator.isArrayOfNumbers(song_ids);
+    
+        const playlist = await managerPlaylistService.createSystemPlaylist({ name, description, image, source, song_ids });
+        res.status(CREATED_STATUS).json(playlist);
+    }
+);
 
 export const updatePlaylistAsManagerController = asyncWrapper(async (req, res) => {
     const { id } = req.params;
