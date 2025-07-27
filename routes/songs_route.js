@@ -1,5 +1,5 @@
 import express from 'express';
-import { addSongToFavoritesController, checkSongFavoriteController, checkSongLikeController, createSongController, deleteSongController, getAllSongsController, getSongByIdController, likeSongController, removeSongFromFavoritesController, searchSongsController, unlikeSongController, updateSongController } from '../controllers/song_controller.js';
+import { addSongToFavoritesController, checkSongFavoriteController, checkSongLikeController, createSongController, deleteSongController, getAllSongsController, getRecommendedSongsController, getSongByIdController, getTopSongsController, likeSongController, recordSongPlayController, removeSongFromFavoritesController, searchSongsController, unlikeSongController, updateSongController } from '../controllers/song_controller.js';
 import { createMulterStorage } from '../services/multer_storage.js';
 import { verifyUserTokenMiddleware } from '../middlewares/user_auth_middleware.js';
 
@@ -49,6 +49,23 @@ router.post(
   verifyUserTokenMiddleware,
   removeSongFromFavoritesController
 );
+
+router.post(
+  '/songs/:id/plays',
+  verifyUserTokenMiddleware,
+  recordSongPlayController
+)
+
+router.get(
+  '/songs/top-songs',
+  getTopSongsController
+)
+
+router.get(
+  '/songs/recommendations',
+  verifyUserTokenMiddleware,
+  getRecommendedSongsController
+)
 
 
 router.get('/songs', getAllSongsController);

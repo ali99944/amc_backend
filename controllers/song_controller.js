@@ -6,7 +6,7 @@ import { generateTrackNumber } from "../lib/random.js";
 import { BAD_REQUEST_STATUS, OK_STATUS } from "../lib/status_codes.js";
 import Validator from "../lib/validator.js";
 import asyncWrapper from "../lib/wrappers/async_wrapper.js";
-import { addSongToFavorites, checkIsSongFavorite, checkIsSongLiked, createSong, deleteSong, getAllFavoriteSongs, getAllSongs, getSongById, likeSong, removeSongFromFavorites, searchSongs, unlikeSong, updateSong } from "../services/song_service.js";
+import { addSongToFavorites, checkIsSongFavorite, checkIsSongLiked, createSong, deleteSong, getAllFavoriteSongs, getAllSongs, getRecommendedSongs, getSongById, getTopSongs, likeSong, recordSongPlay, removeSongFromFavorites, searchSongs, unlikeSong, updateSong } from "../services/song_service.js";
 
 export const getAllSongsController = asyncWrapper(
     async (_, res) => {
@@ -250,5 +250,47 @@ export const getAllFavoriteSongsController = asyncWrapper(
 
         const favoriteSongs = await getAllFavoriteSongs(user_id);
         return res.status(OK_STATUS).json(favoriteSongs);
+    }
+);
+
+export const recordSongPlayController = asyncWrapper(
+    async (req, res) => {
+        const { id: song_id } = req.params;
+        const user_id = req.user?.id || null;
+
+        // Validate inputs
+        await Validator.isNumber(song_id, { integer: true, min: 1 });
+        if (user_id) {
+            await Validator.isNumber(user_id, { integer: true, min: 1 });
+        }
+
+        const playRecord = await recordSongPlay(song_id, user_id);
+        return res.status(OK_STATUS).json(playRecord);
+    }
+);
+
+export const getRecommendedSongsController = asyncWrapper(
+    async (req, res) => {
+        const user_id = req.user.id;
+
+        // Validate inputs
+        await Validator.isNumber(user_id, { integer: true, min: 1 });
+
+        const recommendedSongs = await getRecommendedSongs(user_id);
+        return res.status(OK_STATUS).json(recommendedSongs);
+    }
+);
+
+export const getTopSongsController = asyncWrapper(
+    async (req, res) => {
+        const { limit } = req.query;
+        
+        // Validate limit if provided
+        if (limit) {
+            await Validator.isNumber(limit, { integer: true, min: 1, max: 100 });
+        }
+
+        const topSongs = await getTopSongs(limit ? +limit : undefined);
+        return res.status(OK_STATUS).json(topSongs);
     }
 );
